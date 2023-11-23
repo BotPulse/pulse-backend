@@ -12,12 +12,12 @@ import { WhatsappCloudAPIRequest } from './dto/whatsappRequest.dto';
 @Controller('outcoming')
 export class OutcomingController {
   private readonly logger = new Logger('test');
-  constructor(private readonly testService: OutcomingService) {}
+  constructor(private readonly outcomingMessageService: OutcomingService) {}
 
   @Post()
-  testMessage(@Body() request: WhatsappCloudAPIRequest, @Res() response) {
-    this.logger.warn('testMessage');
-    this.testService
+  outcomingMessage(@Body() request: WhatsappCloudAPIRequest, @Res() response) {
+    this.logger.warn('OutcomingMessage');
+    this.outcomingMessageService
       .OutcomingMessage(request)
       .then((res) => response.status(HttpStatus.CREATED).json(res))
       .catch((err) => {

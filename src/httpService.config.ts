@@ -3,7 +3,6 @@ import { HttpModuleOptions, HttpModuleOptionsFactory } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class HttpServiceConfig implements HttpModuleOptionsFactory {
-  
   constructor(private configService: ConfigService) {}
   private readonly whatsAppToken = this.configService.get<string>(
     'WHATSAPP_BEARER_TOKEN',

@@ -4,6 +4,6 @@ import { IncomingController } from './incoming.controller';
 
 @Module({
   providers: [IncomingService],
-  controllers: [IncomingController]
+  controllers: [IncomingController],
 })
 export class IncomingModule {}

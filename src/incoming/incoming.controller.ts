@@ -3,6 +3,13 @@ import { Request } from 'express';
 import { IncomingMessage } from './dto/IncomingMessage.dto';
 @Controller('incoming')
 export class IncomingController {
+  //TODO: implementar estrategias
+  // private strategies: { [key: string]: Strategy } = {
+  //   text: new TextMessageStrategy(),
+  //   status: new StatusMessageStrategy(),
+  //   // Agrega más estrategias aquí según sea necesario
+  // };
+
   @Get()
   async returnConfig(@Req() request: Request) {
     const challenge = request.query['hub.challenge'];

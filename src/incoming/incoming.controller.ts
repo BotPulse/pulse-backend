@@ -12,8 +12,6 @@ export class IncomingController {
   @Post()
   async webhook(@Body() body: IncomingMessage) {
     //console.debug(body?.entry.at(0).changes.at(0).value.statuses[0]);
-    //console.log(request);
-    //console.log(request.body.entry[0].changes[0].value.messages[0]);
     const message = body?.entry.at(0).changes.at(0).value.messages ?? undefined;
     const status = body?.entry.at(0).changes.at(0).value.statuses ?? undefined;
     if (message) {

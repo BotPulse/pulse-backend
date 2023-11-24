@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { OutcomingService } from './outcoming.service';
 import { WhatsappCloudAPIRequest } from './dto/whatsappRequest.dto';
+import { WhatsappRequestMessage } from './dto/whatsappRequestMessage.dto';
 
 @Controller('outcoming')
 export class OutcomingController {
@@ -15,7 +16,7 @@ export class OutcomingController {
   constructor(private readonly outcomingMessageService: OutcomingService) {}
 
   @Post()
-  outcomingMessage(@Body() request: WhatsappCloudAPIRequest, @Res() response) {
+  outcomingMessage(@Body() request: WhatsappRequestMessage, @Res() response) {
     this.logger.warn('OutcomingMessage');
     this.outcomingMessageService
       .OutcomingMessage(request)

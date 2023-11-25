@@ -4,7 +4,6 @@ import { IncomingMessage } from './dto/IncomingMessage.dto';
 import { IncomingService } from './incoming.service';
 @Controller('incoming')
 export class IncomingController {
-
   constructor(private readonly incomingService: IncomingService) {}
   @Get()
   async returnConfig(@Req() request: Request) {
@@ -15,7 +14,6 @@ export class IncomingController {
   @Post()
   async webhook(@Body() body: IncomingMessage) {
     this.incomingService.processRequest(body);
-
     return 'ok';
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { WebhookPayload } from './interfaces/webhook-payload';
-import { ValueKeys } from './interfaces/webhook-payload';
+import { WebhookPayload } from './dto/webhook-payload';
+import { ValueKeys } from './dto/webhook-payload';
 import {
   IncomingRequestStrategyContext,
   getStrategy,

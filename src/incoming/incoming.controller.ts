@@ -1,6 +1,6 @@
 import { Controller, Post, Req, Get, Body } from '@nestjs/common';
 import { Request } from 'express';
-import { IncomingMessage } from './dto/IncomingMessage.dto';
+import { WebhookPayload } from './dto/webhook-payload';
 import { IncomingService } from './incoming.service';
 @Controller('incoming')
 export class IncomingController {
@@ -12,7 +12,7 @@ export class IncomingController {
   }
 
   @Post()
-  async webhook(@Body() body: IncomingMessage) {
+  async webhook(@Body() body: WebhookPayload) {
     this.incomingService.processRequest(body);
     return 'ok';
   }

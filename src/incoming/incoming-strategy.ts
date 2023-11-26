@@ -1,4 +1,4 @@
-import { WebhookPayload } from './interfaces/webhook-payload';
+import { WebhookPayload } from './dto/webhook-payload';
 
 interface IncomingWhatsappRequestStrategy {
   handleRequest(requestBody: WebhookPayload): WebhookPayload;

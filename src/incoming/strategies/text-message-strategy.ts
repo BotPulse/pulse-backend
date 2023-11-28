@@ -1,6 +1,7 @@
 import { WebhookPayload } from '../dto/webhook-payload';
 import { IncomingWhatsappRequestStrategy } from './incoming-strategy';
 import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 import { ChatOpenAI } from 'langchain/chat_models/openai';
 import {
   ChatPromptTemplate,
@@ -11,19 +12,25 @@ import {
 import { BufferMemory } from 'langchain/memory';
 import { ConversationChain } from 'langchain/chains';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
-//import { CustomWhatsappAnswer } from 'src/outcoming/dto/custom-response.dto';
-import { HttpService } from '@nestjs/axios';
+
+@Injectable()
 export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private outcomingService: OutcomingService,
+  ) {}
   private async getAnswer(input: string): Promise<string> {
     const openAIApiKey = this.configService.get<string>('OPENAI_API_KEY');
     const model = new ChatOpenAI({
       temperature: 0,
       openAIApiKey,
     });
-    const systemPromptTemplate = `eres un asistente virtual llamado Andres,
-que se encarga de dar nombres de personas, no sabes hacer otra cosa y no 
-respondas otro tipo de preguntas`;
+    //     const systemPromptTemplate = `eres un asistente virtual llamado Andres,
+    // que se encarga de dar nombres de personas, no sabes hacer otra cosa y no
+    // respondas otro tipo de preguntas`;
+    const systemPromptTemplate = `Transforma el siguiente texto, 
+que contiene expresiones ofensivas, en una versión más respetuosa y cortés:
+`;
     const chatPromptTemplate = ChatPromptTemplate.fromMessages([
       SystemMessagePromptTemplate.fromTemplate(systemPromptTemplate),
       new MessagesPlaceholder('history'),
@@ -44,31 +51,31 @@ respondas otro tipo de preguntas`;
     const value = requestBody.entry[0].changes[0].value;
     const body = value.messages[0].text.body;
     const from = value.messages[0].from;
+    const baseUrl = this.configService.get<string>('WHATSAPP_BASE_URL');
+    const token = this.configService.get<string>('WHATSAPP_BEARER_TOKEN');
     console.log(`Incoming message from ${from}: ${body}`);
-    const response = await this.getAnswer(body);
-    const sendResponse = new OutcomingService(
-      new ConfigService(),
-      new HttpService(),
-    );
-    const postService = new HttpService();
-    //TODO: try using http response directly
-    postService.post()
-    // sendResponse
-    //   .OutcomingMessage({
-    //     messaging_product: 'whatsapp',
-    //     recipient_type: 'individual',
-    //     to: from,
-    //     type: 'text',
-    //     text: {
-    //       preview_url: false,
-    //       body: response,
-    //     },
-    //   })
-    //   .then((data) => {
-    //     console.log(data);
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
+    const AIresponse = await this.getAnswer(body);
+    //const httpservice = new HttpService();
+    const response = {
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to: from,
+      type: 'text',
+      text: {
+        preview_url: false,
+        body: AIresponse,
+      },
+    };
+    fetch(baseUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(response),
+    });
+    //await this.outcomingService.OutcomingMessage(response);
+    console.log(AIresponse);
+    return 'ok';
   }
 }

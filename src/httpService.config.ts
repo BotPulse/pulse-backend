@@ -7,7 +7,7 @@ export class HttpServiceConfig implements HttpModuleOptionsFactory {
   private readonly whatsAppToken = this.configService.get<string>(
     'WHATSAPP_BEARER_TOKEN',
   );
-  //Creates an instance of HttpModuleOptions everytime an http method is invoked and injects
+  //Creates an instance of HttpModuleOptions everytime a http method is invoked and injects
   //the custom headers in the request.
   createHttpOptions(): HttpModuleOptions {
     return {

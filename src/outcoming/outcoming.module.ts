@@ -15,5 +15,6 @@ import { ConfigModule } from '@nestjs/config';
   ],
   controllers: [OutcomingController],
   providers: [OutcomingService],
+  exports: [OutcomingService],
 })
 export class OutcomingModule {}

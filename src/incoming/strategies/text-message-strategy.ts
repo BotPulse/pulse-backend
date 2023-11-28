@@ -66,14 +66,18 @@ que contiene expresiones ofensivas, en una versión más respetuosa y cortés:
         body: AIresponse,
       },
     };
-    fetch(baseUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(response),
-    });
+    this.outcomingService
+      .OutcomingMessage(response)
+      .then((res) => console.debug(res))
+      .catch((err) => console.error(err.response));
+    // fetch(baseUrl, {
+    //   method: 'POST',
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(response),
+    // });
     //await this.outcomingService.OutcomingMessage(response);
     console.log(AIresponse);
     return 'ok';

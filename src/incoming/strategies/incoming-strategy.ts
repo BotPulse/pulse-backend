@@ -3,9 +3,9 @@ import { TextMessageStrategy } from './text-message-strategy';
 import { MessageStatusStrategy } from './message-status-strategy';
 import { UnknownPayloadStrategy } from './unknown-payload-strategy';
 import { ValueKeys } from '../dto/webhook-payload';
-
+import { ConfigService } from '@nestjs/config';
 export interface IncomingWhatsappRequestStrategy {
-  handleRequest(requestBody: WebhookPayload): WebhookPayload;
+  handleRequest(requestBody: WebhookPayload): any;
 }
 
 export enum IncomingWhatsappRequestStrategyType {
@@ -34,7 +34,10 @@ export function getStrategy(requestBody: WebhookPayload) {
     IncomingWhatsappRequestStrategyType,
     IncomingWhatsappRequestStrategy
   >([
-    [IncomingWhatsappRequestStrategyType.TEXT, new TextMessageStrategy()],
+    [
+      IncomingWhatsappRequestStrategyType.TEXT,
+      new TextMessageStrategy(new ConfigService()),
+    ],
     [IncomingWhatsappRequestStrategyType.STATUS, new MessageStatusStrategy()],
     [IncomingWhatsappRequestStrategyType.UNKNOWN, new UnknownPayloadStrategy()],
   ]);

@@ -7,18 +7,19 @@ import {
   MessagesPlaceholder,
 } from 'langchain/prompts';
 import { BufferMemory } from 'langchain/memory';
-import { systemPromptTemplate } from './prompt';
-import { config } from 'dotenv';
-config();
+//import { systemPromptTemplate } from './prompt';
+import { ConfigService } from '@nestjs/config';
+
+const configService = new ConfigService();
 
 const model = new ChatOpenAI({
   temperature: 0,
-  azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
-  azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION,
-  azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
-  azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
+  openAIApiKey: configService.get<string>('OPENAI_API_KEY'),
+  modelName: 'gpt-3.5-turbo',
 });
-
+const systemPromptTemplate = `eres un asistente virtual llamado Andr'es,
+que se encarga de dar nombres de personas, no sabes hacer otra cosa y no 
+respondas otro tipo de preguntas`;
 const chatPromptTemplate = ChatPromptTemplate.fromMessages([
   SystemMessagePromptTemplate.fromTemplate(systemPromptTemplate),
   new MessagesPlaceholder('history'),
@@ -31,12 +32,9 @@ const chain = new ConversationChain({
   llm: model,
 });
 
-const gptChain = async (input: any) => {
+export const gptChain = async (input: any) => {
   const response = await chain.call({
     input,
   });
   return response?.response;
-  console.log(input);
 };
-
-export default gptChain;

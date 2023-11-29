@@ -7,7 +7,7 @@ import { HttpServiceConfig } from '../httpService.config';
 import { OutcomingModule } from 'src/outcoming/outcoming.module';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
 import { IncomingStrategyService } from './strategies/incoming-strategy.service';
-import { IncomingWhatsappRequestStrategy } from './strategies/strategy-interfaces';
+import { OpenAIChat } from './chains/main-chain';
 import { UnknownPayloadStrategy } from './strategies/unknown-message.service';
 import { TextMessageStrategy } from './strategies/text-message.strategy';
 import { MessageStatusStrategy } from './strategies/message-status.strategy';
@@ -27,6 +27,7 @@ import { MessageStatusStrategy } from './strategies/message-status.strategy';
     UnknownPayloadStrategy,
     TextMessageStrategy,
     MessageStatusStrategy,
+    OpenAIChat,
   ],
   controllers: [IncomingController],
 })

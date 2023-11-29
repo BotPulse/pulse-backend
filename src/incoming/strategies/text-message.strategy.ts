@@ -15,7 +15,6 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
     requestBody: WebhookPayload,
   ): Promise<CustomWhatsappAnswer> {
     const value = requestBody.entry[0].changes[0].value;
-    console.log(value);
     const body = value.messages[0].text.body;
     const from = value.messages[0].from;
     console.log(`Incoming message from ${from}: ${body}`);

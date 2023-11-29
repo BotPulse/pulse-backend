@@ -6,8 +6,9 @@ import { HttpModule } from '@nestjs/axios';
 import { HttpServiceConfig } from '../httpService.config';
 import { OutcomingModule } from 'src/outcoming/outcoming.module';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
-//import { IncomingRequestStrategyContext } from './incoming.strategy.service';
-
+import { IncomingStrategyService } from './incoming-strategy.service';
+import { IncomingWhatsappRequestStrategy } from './strategy-interfaces';
+import { UnknownPayloadStrategy } from './unknown-message.service';
 @Module({
   imports: [
     HttpModule.registerAsync({
@@ -16,7 +17,12 @@ import { OutcomingService } from 'src/outcoming/outcoming.service';
     OutcomingModule,
     ConfigModule,
   ],
-  providers: [IncomingService, OutcomingService],
+  providers: [
+    IncomingService,
+    OutcomingService,
+    IncomingStrategyService,
+    UnknownPayloadStrategy,
+  ],
   controllers: [IncomingController],
 })
 export class IncomingModule {}

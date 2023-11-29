@@ -1,24 +1,60 @@
 import { Injectable } from '@nestjs/common';
 import { WebhookPayload } from './dto/webhook-payload';
-import { ConfigService } from '@nestjs/config';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
-import { IncomingStrategyService } from './incoming-strategy.service';
-import { UnknownPayloadStrategy } from './unknown-message.service';
+import { IncomingStrategyService } from './strategies/incoming-strategy.service';
+import { UnknownPayloadStrategy } from './strategies/unknown-message.service';
+import { TextMessageStrategy } from './strategies/text-message.strategy';
+import { MessageStatusStrategy } from './strategies/message-status.strategy';
+import {
+  IncomingWhatsappRequestStrategy,
+  IncomingWhatsappRequestStrategyType,
+} from './strategies/strategy-interfaces';
+import { ValueKeys } from './dto/webhook-payload';
 @Injectable()
 export class IncomingService {
   constructor(
     private incomingStrategyService: IncomingStrategyService,
     private outcomingService: OutcomingService,
+    private textMessageStrategy: TextMessageStrategy,
+    private unknownPayloadStrategy: UnknownPayloadStrategy,
+    private messageStatusStrategy: MessageStatusStrategy,
   ) {}
-  public processMessage(body: WebhookPayload) {
-    //TODO: recrear el getStrategy aqui, luego, eliminar el outcoming
-    //service de textMessageStrategy y definir el return de las strategias,
-    //al final, enviar el return de las strategias a outcomingService
-    //this.outcomingService.OutcomingMessage();
-    this.incomingStrategyService.setStategy(new UnknownPayloadStrategy());
-    const response = this.incomingStrategyService.handleRequest(body);
-    this.outcomingService.OutcomingMessage(response);
 
+  private getStrategy(
+    requestBody: WebhookPayload,
+  ): IncomingWhatsappRequestStrategy {
+    const value = requestBody.entry[0].changes[0].value;
+    const strategies = new Map<
+      IncomingWhatsappRequestStrategyType,
+      IncomingWhatsappRequestStrategy
+    >([
+      [IncomingWhatsappRequestStrategyType.TEXT, this.textMessageStrategy],
+      [IncomingWhatsappRequestStrategyType.STATUS, this.messageStatusStrategy],
+      [
+        IncomingWhatsappRequestStrategyType.UNKNOWN,
+        this.unknownPayloadStrategy,
+      ],
+    ]);
+    if (value.hasOwnProperty(ValueKeys.MESSAGES)) {
+      const type = value.messages[0].type;
+      const strategy = strategies.get(
+        type as unknown as IncomingWhatsappRequestStrategyType,
+      );
+      return (
+        strategy || strategies.get(IncomingWhatsappRequestStrategyType.UNKNOWN)
+      );
+    }
+
+    if (value.hasOwnProperty(ValueKeys.STATUSES)) {
+      return strategies.get(IncomingWhatsappRequestStrategyType.STATUS);
+    }
+
+    return strategies.get(IncomingWhatsappRequestStrategyType.UNKNOWN);
+  }
+  public async processMessage(body: WebhookPayload): Promise<string> {
+    const strategy = this.getStrategy(body);
+    this.incomingStrategyService.setStategy(strategy);
+    await this.incomingStrategyService.handleRequest(body);
     return 'ok';
   }
 }

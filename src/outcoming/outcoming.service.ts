@@ -17,10 +17,9 @@ export class OutcomingService {
   async OutcomingMessage(
     request: WhatsappRequestMessage | CustomWhatsappAnswer,
   ): Promise<AxiosResponse<WhatsappCloudAPIResponse>> {
-    const res = await firstValueFrom(
+    const { data } = await firstValueFrom(
       this.httpservice.post(this.baseUrl, request),
     );
-    console.log(res);
-    return res.data;
+    return data;
   }
 }

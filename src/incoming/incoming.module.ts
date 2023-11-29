@@ -6,9 +6,11 @@ import { HttpModule } from '@nestjs/axios';
 import { HttpServiceConfig } from '../httpService.config';
 import { OutcomingModule } from 'src/outcoming/outcoming.module';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
-import { IncomingStrategyService } from './incoming-strategy.service';
-import { IncomingWhatsappRequestStrategy } from './strategy-interfaces';
-import { UnknownPayloadStrategy } from './unknown-message.service';
+import { IncomingStrategyService } from './strategies/incoming-strategy.service';
+import { IncomingWhatsappRequestStrategy } from './strategies/strategy-interfaces';
+import { UnknownPayloadStrategy } from './strategies/unknown-message.service';
+import { TextMessageStrategy } from './strategies/text-message.strategy';
+import { MessageStatusStrategy } from './strategies/message-status.strategy';
 @Module({
   imports: [
     HttpModule.registerAsync({
@@ -16,12 +18,15 @@ import { UnknownPayloadStrategy } from './unknown-message.service';
     }),
     OutcomingModule,
     ConfigModule,
+    IncomingModule,
   ],
   providers: [
     IncomingService,
     OutcomingService,
     IncomingStrategyService,
     UnknownPayloadStrategy,
+    TextMessageStrategy,
+    MessageStatusStrategy,
   ],
   controllers: [IncomingController],
 })

@@ -15,7 +15,7 @@ export class IncomingController {
 
   @Post()
   async webhook(@Body() body: WebhookPayload) {
-    this.incomingService.processRequest(body);
+    this.incomingService.processMessage(body);
     return 'ok';
   }
 }

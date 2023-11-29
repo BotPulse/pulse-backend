@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { OutcomingModule } from './outcoming/outcoming.module';
 import { IncomingModule } from './incoming/incoming.module';
-import { StrategiesModule } from './incoming/strategies/strategies.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -12,7 +11,6 @@ import { StrategiesModule } from './incoming/strategies/strategies.module';
     }),
     OutcomingModule,
     IncomingModule,
-    StrategiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

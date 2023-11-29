@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { WebhookPayload } from './dto/webhook-payload';
-import {
-  IncomingRequestStrategyContext,
-  getStrategy,
-} from './strategies/incoming-strategy';
 import { ConfigService } from '@nestjs/config';
+import { OutcomingService } from 'src/outcoming/outcoming.service';
 @Injectable()
 export class IncomingService {
-  constructor(private configService: ConfigService) {}
-
-  public processRequest(requestBody: WebhookPayload) {
-    const strategy = getStrategy(requestBody);
-    const strategyContext = new IncomingRequestStrategyContext(strategy);
-    strategyContext.handleRequest(requestBody);
+  constructor(
+    private configService: ConfigService,
+    private outcomingService: OutcomingService,
+  ) {}
+  public processMessage(body: WebhookPayload) {
+    //TODO: recrear el getStrategy aqui, luego, eliminar el outcoming
+    //service de textMessageStrategy y definir el return de las strategias,
+    //al final, enviar el return de las strategias a outcomingService
+    //this.outcomingService.OutcomingMessage();
+    return 'ok';
   }
 }

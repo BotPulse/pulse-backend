@@ -6,26 +6,17 @@ import { HttpModule } from '@nestjs/axios';
 import { HttpServiceConfig } from '../httpService.config';
 import { OutcomingModule } from 'src/outcoming/outcoming.module';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
-import { IncomingRequestStrategyContext } from './strategies/incoming-strategy';
-import { StrategyModule } from './strategy/strategy.module';
-import { StrategiesModule } from './strategies/strategies.module';
+//import { IncomingRequestStrategyContext } from './incoming.strategy.service';
+
 @Module({
   imports: [
     HttpModule.registerAsync({
       useClass: HttpServiceConfig,
     }),
-    ConfigModule,
-    IncomingModule,
     OutcomingModule,
-    StrategyModule,
-    StrategiesModule,
+    ConfigModule,
   ],
-  providers: [
-    IncomingService,
-    OutcomingService,
-    IncomingRequestStrategyContext,
-  ],
-  exports: [IncomingModule],
+  providers: [IncomingService, OutcomingService],
   controllers: [IncomingController],
 })
 export class IncomingModule {}

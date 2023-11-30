@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OutcomingModule } from './outcoming/outcoming.module';
 import { IncomingModule } from './incoming/incoming.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConversationsModule } from './conversations/conversations.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { MongooseModule } from '@nestjs/mongoose';
         uri: configService.get<string>('DATABASE_URL'),
       }),
     }),
+    ConversationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

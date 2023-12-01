@@ -9,7 +9,7 @@ import {
 } from 'langchain/prompts';
 import { BufferMemory } from 'langchain/memory';
 import { ConversationChain } from 'langchain/chains';
-
+//import { asistantPrompt } from './asistant-prompt';
 @Injectable()
 export class OpenAIChat {
   constructor(private readonly configService: ConfigService) {}
@@ -20,7 +20,7 @@ export class OpenAIChat {
       temperature: 0,
       openAIApiKey,
     });
-    const systemPromptTemplate = `Transforma el siguiente texto, 
+    const systemPromptTemplate = `Transforma el siguiente texto,
     que contiene expresiones ofensivas, en una versión más respetuosa y cortés:`;
 
     const chatPromptTemplate = ChatPromptTemplate.fromMessages([

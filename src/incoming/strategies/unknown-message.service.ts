@@ -1,6 +1,6 @@
 import { IncomingWhatsappRequestStrategy } from './strategy-interfaces';
 import { WebhookPayload } from '../dto/webhook-payload';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Provider } from '@nestjs/common';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
 
 @Injectable()
@@ -23,3 +23,8 @@ export class UnknownPayloadStrategy implements IncomingWhatsappRequestStrategy {
     return requestBody;
   }
 }
+
+export const UnknownPayloadStrategyProvider: Provider = {
+  provide: UnknownPayloadStrategy,
+  useClass: UnknownPayloadStrategy,
+};

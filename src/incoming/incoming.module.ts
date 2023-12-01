@@ -9,9 +9,9 @@ import { OutcomingService } from 'src/outcoming/outcoming.service';
 import { IncomingStrategyService } from './strategies/incoming-strategy.service';
 import { OpenAIChat } from './chains/main-chain';
 import { UnknownPayloadStrategy } from './strategies/unknown-message.service';
-import { TextMessageStrategy } from './strategies/text-message.strategy';
-import { MessageStatusStrategy } from './strategies/message-status.strategy';
-
+import { TextMessageStrategyProvider } from './strategies/text-message.strategy';
+import { MessageStatusStrategyProvider } from './strategies/message-status.strategy';
+import { StrategiesMapProvider } from './strategies/strategies-map.provider';
 @Module({
   imports: [
     HttpModule.registerAsync({
@@ -26,9 +26,10 @@ import { MessageStatusStrategy } from './strategies/message-status.strategy';
     OutcomingService,
     IncomingStrategyService,
     UnknownPayloadStrategy,
-    TextMessageStrategy,
-    MessageStatusStrategy,
+    MessageStatusStrategyProvider,
+    TextMessageStrategyProvider,
     OpenAIChat,
+    StrategiesMapProvider,
   ],
   controllers: [IncomingController],
 })

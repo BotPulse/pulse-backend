@@ -1,6 +1,6 @@
 import { WebhookPayload } from '../dto/webhook-payload';
 import { IncomingWhatsappRequestStrategy } from './strategy-interfaces';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Provider } from '@nestjs/common';
 
 @Injectable()
 export class MessageStatusStrategy implements IncomingWhatsappRequestStrategy {
@@ -12,3 +12,8 @@ export class MessageStatusStrategy implements IncomingWhatsappRequestStrategy {
     return requestBody;
   }
 }
+
+export const MessageStatusStrategyProvider: Provider = {
+  provide: MessageStatusStrategy,
+  useClass: MessageStatusStrategy,
+};

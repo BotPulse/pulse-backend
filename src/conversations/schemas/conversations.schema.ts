@@ -8,20 +8,13 @@ export enum MessageStatusEnum {
   READ = 'read',
   FAILED = 'failed',
   CREATED = 'created',
+  NONE = 'none',
 }
 
 @Schema()
 export class MessageStatus {
-  @Prop({ default: MessageStatusEnum.CREATED })
+  @Prop({ default: MessageStatusEnum.NONE })
   status: MessageStatusEnum;
-  timestamp: number;
-}
-
-@Schema()
-export class WhatsappMessageID {
-  @Prop()
-  id: string;
-  @Prop()
   timestamp: number;
 }
 
@@ -41,9 +34,6 @@ export class Message {
 
   @Prop()
   from: string;
-
-  @Prop()
-  wamid: WhatsappMessageID;
 
   @Prop()
   timestamp: number;

@@ -16,5 +16,6 @@ import {
     ]),
   ],
   providers: [ConversationsService],
+  exports: [ConversationsService],
 })
 export class ConversationsModule {}

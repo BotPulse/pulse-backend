@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { WhatsappCloudAPIResponse } from './dto/whatsappResponse.dto';
 import { WhatsappRequestMessage } from './dto/whatsappRequestMessage.dto';
@@ -16,10 +15,10 @@ export class OutcomingService {
     this.configService.get<string>('WHATSAPP_BASE_URL');
   async OutcomingMessage(
     request: WhatsappRequestMessage | CustomWhatsappAnswer,
-  ): Promise<AxiosResponse<WhatsappCloudAPIResponse>> {
-    const { data } = await firstValueFrom(
-      this.httpservice.post(this.baseUrl, request),
+  ): Promise<WhatsappCloudAPIResponse> {
+    const response = await firstValueFrom(
+      this.httpservice.post<WhatsappCloudAPIResponse>(this.baseUrl, request),
     );
-    return data;
+    return response.data;
   }
 }

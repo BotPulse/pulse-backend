@@ -27,7 +27,6 @@ export class Contact {
 export class Message {
   _id: string;
   from: string;
-  wamid: WhatsappMessageID;
   timestamp: number;
   text: string;
   type: string;

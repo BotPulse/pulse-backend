@@ -9,9 +9,6 @@ import { ValueKeys } from './dto/webhook-payload';
 
 @Injectable()
 export class IncomingService {
-  //TODO: Create providers for strategies and a provider for the map
-  //TODO: Create a strategy factory
-  //TODO: Inject the strategies map in the constructor
   constructor(
     @Inject('StrategiesMap')
     private strategiesMap: Map<

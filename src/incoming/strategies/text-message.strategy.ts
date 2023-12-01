@@ -1,9 +1,10 @@
 import { WebhookPayload } from '../dto/webhook-payload';
 import { IncomingWhatsappRequestStrategy } from './strategy-interfaces';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Provider } from '@nestjs/common';
 import { CustomWhatsappAnswer } from 'src/outcoming/dto/custom-response.dto';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
 import { OpenAIChat } from '../chains/main-chain';
+
 @Injectable()
 export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
   constructor(
@@ -33,3 +34,8 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
     return response;
   }
 }
+
+export const TextMessageStrategyProvider: Provider = {
+  provide: TextMessageStrategy,
+  useClass: TextMessageStrategy,
+};

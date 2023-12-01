@@ -7,6 +7,7 @@ import { OpenAIChat } from '../chains/main-chain';
 import { ConversationsService } from 'src/conversations/conversations.service';
 import { CreateConversationDto } from 'src/conversations/dto/create-conversation.dto';
 import { MessageStatusEnum } from 'src/conversations/schemas/conversations.schema';
+//import { uuid } from 'uuidv4';
 @Injectable()
 export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
   constructor(
@@ -19,10 +20,13 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
     requestBody: WebhookPayload,
   ): Promise<CustomWhatsappAnswer> {
     //TODO: create error handling flow
+    //add validation time to don't answer messages older than 24h
     const value = requestBody.entry[0].changes[0].value;
     const body = value.messages[0].text.body;
     const from = value.messages[0].from;
     const AIMessage = await this.openAIChat.getAnswer(body);
+    console.log(`Incoming message from ${from}: ${body}`);
+    console.log(`AI response: ${AIMessage}`);
     const response = {
       messaging_product: 'whatsapp',
       recipient_type: 'individual',
@@ -58,7 +62,7 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
           text: value.messages[0].text.body,
           type: value.messages[0].type,
           status: {
-            status: MessageStatusEnum.NONE,
+            status: MessageStatusEnum.RECIEVED,
             timestamp: parseInt(value.messages[0].timestamp),
           },
         },
@@ -69,14 +73,13 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
           text: AIMessage,
           type: MessagesType.TEXT,
           status: {
-            status: MessageStatusEnum.NONE,
+            status: MessageStatusEnum.SENT,
             timestamp: parseInt(value.messages[0].timestamp),
           },
         },
       ],
     };
     await this.conversationsService.createOrUpdate(createConversation);
-    console.log(`Incoming message from ${from}: ${body}`);
     return response;
   }
 }

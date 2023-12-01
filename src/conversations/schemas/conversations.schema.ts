@@ -9,6 +9,7 @@ export enum MessageStatusEnum {
   FAILED = 'failed',
   CREATED = 'created',
   NONE = 'none',
+  RECIEVED = 'recieved',
 }
 
 @Schema()

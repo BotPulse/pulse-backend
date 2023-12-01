@@ -5,6 +5,7 @@ import {
   Conversation,
   ConversationSchema,
 } from './schemas/conversations.schema';
+import { MessagesService } from './messages/messages.service';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import {
       },
     ]),
   ],
-  providers: [ConversationsService],
+  providers: [ConversationsService, MessagesService],
   exports: [ConversationsService],
 })
 export class ConversationsModule {}

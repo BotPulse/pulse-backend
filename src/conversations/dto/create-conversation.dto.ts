@@ -1,5 +1,3 @@
-import { MessageStatusEnum } from '../schemas/conversations.schema';
-
 export class CreateConversationDto {
   _id: string;
   whatsapp_business_account_id: string;
@@ -9,10 +7,6 @@ export class CreateConversationDto {
   messages: Message[];
 }
 
-export class MessageStatus {
-  status: MessageStatusEnum;
-  timestamp: number;
-}
 
 export class WhatsappMessageID {
   id: string;
@@ -30,5 +24,5 @@ export class Message {
   timestamp: number;
   text: string;
   type: string;
-  status: MessageStatus;
+
 }

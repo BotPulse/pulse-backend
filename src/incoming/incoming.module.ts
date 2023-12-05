@@ -19,6 +19,12 @@ import {
   ConversationSchema,
   Conversation,
 } from 'src/conversations/schemas/conversations.schema';
+import {
+  Status,
+  StatusesSchema,
+} from 'src/conversations/schemas/statuses.schema';
+import { StatusesService } from 'src/conversations/statuses/statuses.service';
+
 @Module({
   imports: [
     HttpModule.registerAsync({
@@ -28,6 +34,10 @@ import {
       {
         name: Conversation.name,
         schema: ConversationSchema,
+      },
+      {
+        name: Status.name,
+        schema: StatusesSchema,
       },
     ]),
     OutcomingModule,
@@ -45,6 +55,7 @@ import {
     OpenAIChat,
     StrategiesMapProvider,
     ConversationsService,
+    StatusesService,
   ],
   controllers: [IncomingController],
 })

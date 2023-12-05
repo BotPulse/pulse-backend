@@ -5,7 +5,9 @@ import {
   Conversation,
   ConversationSchema,
 } from './schemas/conversations.schema';
+import { Status, StatusesSchema } from './schemas/statuses.schema';
 import { MessagesService } from './messages/messages.service';
+import { StatusesService } from './statuses/statuses.service';
 
 @Module({
   imports: [
@@ -14,9 +16,13 @@ import { MessagesService } from './messages/messages.service';
         name: Conversation.name,
         schema: ConversationSchema,
       },
+      {
+        name: Status.name,
+        schema: StatusesSchema,
+      },
     ]),
   ],
-  providers: [ConversationsService, MessagesService],
+  providers: [ConversationsService, MessagesService, StatusesService],
   exports: [ConversationsService],
 })
 export class ConversationsModule {}

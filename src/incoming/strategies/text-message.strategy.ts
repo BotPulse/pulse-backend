@@ -6,8 +6,7 @@ import { OutcomingService } from 'src/outcoming/outcoming.service';
 import { OpenAIChat } from '../chains/main-chain';
 import { ConversationsService } from 'src/conversations/conversations.service';
 import { CreateConversationDto } from 'src/conversations/dto/create-conversation.dto';
-import { MessageStatusEnum } from 'src/conversations/schemas/conversations.schema';
-//import { uuid } from 'uuidv4';
+
 @Injectable()
 export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
   constructor(
@@ -61,10 +60,6 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
           timestamp: parseInt(value.messages[0].timestamp),
           text: value.messages[0].text.body,
           type: value.messages[0].type,
-          status: {
-            status: MessageStatusEnum.RECIEVED,
-            timestamp: parseInt(value.messages[0].timestamp),
-          },
         },
         {
           _id: outcomingMessageId,
@@ -72,10 +67,6 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
           timestamp: Date.now(),
           text: AIMessage,
           type: MessagesType.TEXT,
-          status: {
-            status: MessageStatusEnum.SENT,
-            timestamp: parseInt(value.messages[0].timestamp),
-          },
         },
       ],
     };

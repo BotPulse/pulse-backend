@@ -1,6 +1,6 @@
 import { WebhookPayload, MessagesType } from '../dto/webhook-payload';
 import { IncomingWhatsappRequestStrategy } from './strategy-interfaces';
-import { Injectable, Provider } from '@nestjs/common';
+import { Injectable, Provider, Logger } from '@nestjs/common';
 import { CustomWhatsappAnswer } from 'src/outcoming/dto/custom-response.dto';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
 import { OpenAIChat } from '../chains/main-chain';
@@ -9,6 +9,7 @@ import { CreateConversationDto } from 'src/conversations/dto/create-conversation
 
 @Injectable()
 export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
+  private logger = new Logger('TextMessageStrategy');
   constructor(
     private readonly openAIChat: OpenAIChat,
     private readonly conversationsService: ConversationsService,
@@ -18,14 +19,12 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
   async handleRequest(
     requestBody: WebhookPayload,
   ): Promise<CustomWhatsappAnswer> {
-    //TODO: create error handling flow
-    //add validation time to don't answer messages older than 24h
     const value = requestBody.entry[0].changes[0].value;
     const body = value.messages[0].text.body;
     const from = value.messages[0].from;
-    const AIMessage = await this.openAIChat.getAnswer(body);
-    console.log(`Incoming message from ${from}: ${body}`);
-    console.log(`AI response: ${AIMessage}`);
+    const AIMessage = await this.openAIChat.getAnswer(from, body);
+    this.logger.log(`Incoming message from ${from}: ${body}`);
+    this.logger.log(`AI response: ${AIMessage}`);
     const response = {
       messaging_product: 'whatsapp',
       recipient_type: 'individual',

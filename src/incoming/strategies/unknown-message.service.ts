@@ -13,6 +13,7 @@ export class UnknownPayloadStrategy implements IncomingWhatsappRequestStrategy {
       messaging_product: 'whatsapp',
       recipient_type: 'individual',
       to: from,
+      from: requestBody.entry[0].id,
       type: 'text',
       text: {
         preview_url: false,

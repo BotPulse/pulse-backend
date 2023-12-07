@@ -6,9 +6,12 @@ import { OutcomingService } from 'src/outcoming/outcoming.service';
 @Injectable()
 export class UnknownPayloadStrategy implements IncomingWhatsappRequestStrategy {
   constructor(private readonly outcomingService: OutcomingService) {}
+  //TODO: save unknown messages in db, modify dto and schema
   handleRequest(requestBody: WebhookPayload): any {
     const value = requestBody.entry[0].changes[0].value;
     const from = value.messages[0].from;
+    const displayPhoneNumber =
+      requestBody.entry[0].changes[0].value.metadata.display_phone_number;
     const response = {
       messaging_product: 'whatsapp',
       recipient_type: 'individual',
@@ -20,7 +23,7 @@ export class UnknownPayloadStrategy implements IncomingWhatsappRequestStrategy {
         body: 'Lo siento, no puedo responder mensajes de audio o multimedia 🙈',
       },
     };
-    this.outcomingService.OutcomingMessage(response, requestBody.entry[0].id);
+    this.outcomingService.OutcomingMessage(response, displayPhoneNumber);
     return requestBody;
   }
 }

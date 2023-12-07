@@ -32,7 +32,8 @@ export class ConversationsService {
     conversation: CreateConversationDto,
   ): Promise<Conversation> {
     const existingConversation = await this.conversationModel.findOne({
-      _id: conversation._id,
+      from: conversation.from,
+      display_phone_number: conversation.display_phone_number,
     });
     if (existingConversation) {
       existingConversation.messages.push(...conversation.messages);

@@ -1,5 +1,5 @@
 export class CreateConversationDto {
-  _id: string;
+  from: string;
   whatsapp_business_account_id: string;
   display_phone_number: string;
   phone_number_id: string;
@@ -23,5 +23,4 @@ export class Message {
   timestamp: number;
   text: string;
   type: string;
-
 }

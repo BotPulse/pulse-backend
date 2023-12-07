@@ -22,8 +22,10 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
     const value = requestBody.entry[0].changes[0].value;
     const body = value.messages[0].text.body;
     const from = value.messages[0].from;
+    const contact = value.contacts[0].profile.name;
+    const senderNumber = value.metadata.display_phone_number;
     const AIMessage = await this.openAIChat.getAnswer(from, body);
-    this.logger.log(`Incoming message from ${from}: ${body}`);
+    this.logger.log(`Incoming message from ${from} ${contact}: ${body}`);
     this.logger.log(`AI response: ${AIMessage}`);
     const response = {
       messaging_product: 'whatsapp',
@@ -37,13 +39,13 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
     };
     const outcomingMessage = await this.outcomingService.OutcomingMessage(
       response,
-      requestBody.entry[0].id,
+      senderNumber,
     );
     const outcomingMessageId = outcomingMessage.messages[0].id;
     const displayPhoneNumber =
       requestBody.entry[0].changes[0].value.metadata.display_phone_number;
     const createConversation: CreateConversationDto = {
-      _id: from,
+      from,
       whatsapp_business_account_id: requestBody.entry[0].id,
       display_phone_number: displayPhoneNumber,
       phone_number_id:

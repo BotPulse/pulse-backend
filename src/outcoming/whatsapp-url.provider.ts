@@ -13,8 +13,8 @@ export const WhatsappUrlProvider: Provider = {
         generateWhatsappUrl(configService.get<string>('TEST_NUMBER_ID')),
       ],
       [
-        configService.get<string>('BOT_PULSE_WA_ID'),
-        generateWhatsappUrl(configService.get<string>('BOT_PULSE_NUMBER_ID')),
+        configService.get<string>('ALFRED_WA_ID'),
+        generateWhatsappUrl(configService.get<string>('ALFRED_NUMBER_ID')),
       ],
     ]),
   inject: [ConfigService],

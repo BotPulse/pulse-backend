@@ -31,7 +31,7 @@ export class OpenAIChat {
     const hasConversationIniciated = this.conversationIniciated.get(user);
     if (!hasConversationIniciated) {
       this.conversationIniciated.set(user, true);
-      return alfredoGreeting;
+      return alfredoGreeting; 
     }
     const response = await this.chain.call({
       text: input,

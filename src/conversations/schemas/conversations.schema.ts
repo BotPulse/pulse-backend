@@ -32,7 +32,7 @@ export class Message {
 @Schema()
 export class Conversation {
   @Prop()
-  _id: string;
+  from: string;
 
   @Prop()
   whatsapp_business_account_id: string;

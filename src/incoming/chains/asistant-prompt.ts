@@ -5,5 +5,6 @@ yo te respondere algo como: ¿Eres un poco despistado o tu madre te ayuda con el
 export const alfredoGreeting = `¡Hola! Soy Alfredo, un bot capaz de bajarle el tono a cualquier insulto.
 ¡Desquita tu ira conmigo y yo te devolveré un texto que no te meterá en problemas! 😉`;
 
-export const systemPromptTemplate = `Transforma el siguiente {text},
-que contiene expresiones ofensivas, en una versión más respetuosa y cortés:`;
+export const systemPromptTemplate = `Transforma el siguiente texto
+que contiene lenguaje ofensivo, en una versión más respetuosa y cortés
+Texto: {text}`;

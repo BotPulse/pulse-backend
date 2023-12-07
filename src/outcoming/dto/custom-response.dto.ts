@@ -2,7 +2,6 @@ export class CustomWhatsappAnswer {
   messaging_product: string;
   recipient_type: string;
   to: string;
-  from: string;
   type: string;
   text: Text;
 }

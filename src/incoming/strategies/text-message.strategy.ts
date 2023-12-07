@@ -29,15 +29,16 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
       messaging_product: 'whatsapp',
       recipient_type: 'individual',
       to: from,
-      from: requestBody.entry[0].id,
       type: 'text',
       text: {
         preview_url: false,
         body: AIMessage,
       },
     };
-    const outcomingMessage =
-      await this.outcomingService.OutcomingMessage(response);
+    const outcomingMessage = await this.outcomingService.OutcomingMessage(
+      response,
+      requestBody.entry[0].id,
+    );
     const outcomingMessageId = outcomingMessage.messages[0].id;
     const displayPhoneNumber =
       requestBody.entry[0].changes[0].value.metadata.display_phone_number;

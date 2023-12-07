@@ -16,6 +16,6 @@ import { ConfigService } from '@nestjs/config';
   ],
   controllers: [OutcomingController],
   providers: [OutcomingService, WhatsappUrlProvider, ConfigService],
-  exports: [OutcomingService],
+  exports: [OutcomingService, WhatsappUrlProvider],
 })
 export class OutcomingModule {}

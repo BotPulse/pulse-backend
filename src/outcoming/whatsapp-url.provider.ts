@@ -9,12 +9,12 @@ export const WhatsappUrlProvider: Provider = {
   useFactory: (configService: ConfigService): Map<string, string> =>
     new Map([
       [
-        configService.get<string>('TEST_NUMBER'),
+        configService.get<string>('TEST_WA_ID'),
         generateWhatsappUrl(configService.get<string>('TEST_NUMBER_ID')),
       ],
       [
-        configService.get<string>('BOT_PULSE'),
-        generateWhatsappUrl(configService.get<string>('BOT_PULSE_NUMBER')),
+        configService.get<string>('BOT_PULSE_WA_ID'),
+        generateWhatsappUrl(configService.get<string>('BOT_PULSE_NUMBER_ID')),
       ],
     ]),
   inject: [ConfigService],

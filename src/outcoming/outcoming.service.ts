@@ -11,18 +11,27 @@ export class OutcomingService {
   constructor(
     @Inject('WhatsappUrlMap')
     private readonly whatsappUrlProvider: Map<string, string>,
-    private readonly configService: ConfigService,
     private httpservice: HttpService,
   ) {}
-  private readonly baseUrl =
-    this.configService.get<string>('WHATSAPP_BASE_URL');
   async OutcomingMessage(
     request: WhatsappRequestMessage | CustomWhatsappAnswer,
+    id: string,
   ): Promise<WhatsappCloudAPIResponse> {
-    const number = request.from;
-    const url = this.whatsappUrlProvider.get(number);
+    const url = this.whatsappUrlProvider.get(id);
+    console.log(id);
+    console.log(url);
+    const newResponse = {
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to: request.to,
+      type: request.type,
+      text: {
+        preview_url: false,
+        body: request.text.body,
+      },
+    };
     const response = await firstValueFrom(
-      this.httpservice.post<WhatsappCloudAPIResponse>(url, request),
+      this.httpservice.post<WhatsappCloudAPIResponse>(url, newResponse),
     );
     return response.data;
   }

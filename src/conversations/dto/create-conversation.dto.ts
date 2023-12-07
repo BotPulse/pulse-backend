@@ -7,7 +7,6 @@ export class CreateConversationDto {
   messages: Message[];
 }
 
-
 export class WhatsappMessageID {
   id: string;
   timestamp: number;

@@ -7,7 +7,7 @@ import {
   SystemMessagePromptTemplate,
 } from 'langchain/prompts';
 import { ConversationChain } from 'langchain/chains';
-import { systemPromptTemplate, greetings } from './asistant-prompt';
+import { systemPromptTemplate, alfredoGreeting } from './asistant-prompt';
 import { LimitedSizeMap } from './limited-size-map';
 @Injectable()
 export class OpenAIChat {
@@ -31,7 +31,7 @@ export class OpenAIChat {
     const hasConversationIniciated = this.conversationIniciated.get(user);
     if (!hasConversationIniciated) {
       this.conversationIniciated.set(user, true);
-      return greetings;
+      return alfredoGreeting;
     }
     const response = await this.chain.call({
       text: input,

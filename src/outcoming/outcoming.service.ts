@@ -4,8 +4,6 @@ import { firstValueFrom } from 'rxjs';
 import { WhatsappCloudAPIResponse } from './dto/whatsappResponse.dto';
 import { WhatsappRequestMessage } from './dto/whatsappRequestMessage.dto';
 import { CustomWhatsappAnswer } from './dto/custom-response.dto';
-import { ConfigService } from '@nestjs/config';
-//import { WhatsappUrlProvider } from './whatsapp-url.provider';
 @Injectable()
 export class OutcomingService {
   constructor(
@@ -18,8 +16,6 @@ export class OutcomingService {
     id: string,
   ): Promise<WhatsappCloudAPIResponse> {
     const url = this.whatsappUrlProvider.get(id);
-    console.log(id);
-    console.log(url);
     const newResponse = {
       messaging_product: 'whatsapp',
       recipient_type: 'individual',

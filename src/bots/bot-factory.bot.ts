@@ -9,9 +9,7 @@ export class BotFactory {
     //private readonly configService: ConfigService,
   ) {}
   public createBot(phoneNumber: string): BotInterface {
-    console.log(phoneNumber);
     const bot = this.botProvider.get(phoneNumber);
-
     if (!bot) {
       throw new Error('Bot not found');
     }

@@ -19,7 +19,6 @@ export class AlfredBot implements BotInterface {
   //TODO implement a Queue data structure that also eliminates buffers that are 24h old
   private conversationIniciated = new LimitedSizeMap();
   private model = new ChatOpenAI({
-    modelName: 'gpt-4-1106-preview',
     temperature: 0,
     openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
   });

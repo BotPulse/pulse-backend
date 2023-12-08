@@ -12,8 +12,8 @@ export const BotProvider: Provider = {
     charlesBot: BotInterface,
   ): Map<string, BotInterface> =>
     new Map([
-      [configService.get<string>('TEST_WA_ID'), alfredBot],
-      [configService.get<string>('ALFRED_WA_ID'), charlesBot],
+      [configService.get<string>('TEST_WA_ID'), charlesBot],
+      [configService.get<string>('ALFRED_WA_ID'), alfredBot],
     ]),
   inject: [ConfigService, AlfredBot, CharlesBot],
 };

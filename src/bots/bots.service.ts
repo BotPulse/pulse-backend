@@ -9,8 +9,4 @@ export class BotsService {
   public createBot(phoneNumber: string): BotInterface {
     return this.botFactory.createBot(phoneNumber);
   }
-  public getAnswer(phoneNumber: string, input: string): Promise<string> {
-    const bot = this.createBot(phoneNumber);
-    return bot.getAnswer(phoneNumber, input);
-  }
 }

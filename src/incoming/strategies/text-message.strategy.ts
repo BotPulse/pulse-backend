@@ -3,17 +3,16 @@ import { IncomingWhatsappRequestStrategy } from './strategy-interfaces';
 import { Injectable, Provider, Logger } from '@nestjs/common';
 import { CustomWhatsappAnswer } from 'src/outcoming/dto/custom-response.dto';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
-import { OpenAIChat } from '../chains/main-chain';
 import { ConversationsService } from 'src/conversations/conversations.service';
 import { CreateConversationDto } from 'src/conversations/dto/create-conversation.dto';
-
+import { BotsService } from 'src/bots/bots.service';
 @Injectable()
 export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
   private logger = new Logger('TextMessageStrategy');
   constructor(
-    private readonly openAIChat: OpenAIChat,
     private readonly conversationsService: ConversationsService,
     private readonly outcomingService: OutcomingService,
+    private readonly botsService: BotsService,
   ) {}
 
   async handleRequest(
@@ -24,7 +23,8 @@ export class TextMessageStrategy implements IncomingWhatsappRequestStrategy {
     const from = value.messages[0].from;
     const contact = value.contacts[0].profile.name;
     const senderNumber = value.metadata.display_phone_number;
-    const AIMessage = await this.openAIChat.getAnswer(from, body);
+    const bot = this.botsService.createBot(senderNumber);
+    const AIMessage = await bot.getAnswer(from, body);
     this.logger.log(`Incoming message from ${from} ${contact}: ${body}`);
     this.logger.log(`AI response: ${AIMessage}`);
     const response = {

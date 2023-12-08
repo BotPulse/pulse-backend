@@ -24,7 +24,12 @@ import {
   StatusesSchema,
 } from 'src/conversations/schemas/statuses.schema';
 import { StatusesService } from 'src/conversations/statuses/statuses.service';
-
+import { BotsModule } from 'src/bots/bots.module';
+import { BotsService } from 'src/bots/bots.service';
+import { BotFactory } from 'src/bots/bot-factory.bot';
+import { BotProvider } from 'src/bots/bot-provider';
+import { AlfredBot } from 'src/bots/alfred.bot';
+import { CharlesBot } from 'src/bots/charles.bot';
 @Module({
   imports: [
     HttpModule.registerAsync({
@@ -44,6 +49,7 @@ import { StatusesService } from 'src/conversations/statuses/statuses.service';
     ConfigModule,
     ConversationsModule,
     IncomingModule,
+    BotsModule,
   ],
   providers: [
     IncomingService,
@@ -56,6 +62,11 @@ import { StatusesService } from 'src/conversations/statuses/statuses.service';
     StrategiesMapProvider,
     ConversationsService,
     StatusesService,
+    BotsService,
+    BotFactory,
+    BotProvider,
+    AlfredBot,
+    CharlesBot,
   ],
   controllers: [IncomingController],
 })

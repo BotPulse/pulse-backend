@@ -1,6 +1,7 @@
 import { Injectable, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { OpenAI } from 'langchain/llms/openai';
 import {
   ChatPromptTemplate,
   HumanMessagePromptTemplate,
@@ -18,6 +19,7 @@ export class AlfredBot implements BotInterface {
   //TODO implement a Queue data structure that also eliminates buffers that are 24h old
   private conversationIniciated = new LimitedSizeMap();
   private model = new ChatOpenAI({
+    modelName: 'gpt-4-1106-preview',
     temperature: 0,
     openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
   });
@@ -38,11 +40,25 @@ export class AlfredBot implements BotInterface {
     return this.phoneNumber;
   }
   public async getAnswer(user: string, input: string): Promise<string> {
-    const hasConversationIniciated = this.conversationIniciated.get(user);
-    if (!hasConversationIniciated) {
-      this.conversationIniciated.set(user, true);
+    const userConversation = this.conversationIniciated.get(user);
+    if (!userConversation) {
+      this.conversationIniciated.set(user, { messageCount: 1 });
       return alfredoGreeting;
     }
+    if (userConversation && userConversation.messageCount === 3) {
+      this.conversationIniciated.set(user, {
+        messageCount: userConversation.messageCount + 1,
+      });
+      const response = await this.chain.call({
+        text: input,
+      });
+      return `${response?.response}... 
+Si te interesa implementar un bot inteligente en tu negocio,
+escribele a mi colega Carlos de botpulse, este es su numero 6969696969`;
+    }
+    this.conversationIniciated.set(user, {
+      messageCount: userConversation.messageCount + 1,
+    });
     const response = await this.chain.call({
       text: input,
     });

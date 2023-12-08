@@ -6,7 +6,7 @@ import { OutcomingModule } from './outcoming/outcoming.module';
 import { IncomingModule } from './incoming/incoming.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConversationsModule } from './conversations/conversations.module';
-import { AgentsModule } from './agents/agents.module';
+import { BotsModule } from './bots/bots.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { AgentsModule } from './agents/agents.module';
       }),
     }),
     ConversationsModule,
-    AgentsModule,
+    BotsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

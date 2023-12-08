@@ -24,6 +24,7 @@ import { formatLogToString } from 'langchain/agents/format_scratchpad/log';
 import { renderTextDescription } from 'langchain/tools/render';
 import { ReActSingleInputOutputParser } from 'langchain/agents/react/output_parser';
 import { DynamicTool } from 'langchain/tools';
+import { pull } from 'langchain/hub';
 
 @Injectable()
 export class CharlesBot implements BotInterface {
@@ -57,12 +58,8 @@ export class CharlesBot implements BotInterface {
     }
   }
   async getAnswer(user: string, input: string): Promise<string> {
-    this.setMemory(user);
-
-    const model = new OpenAI({
-      modelName: 'gpt-3.5-turbo',
-      openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
-    });
+    const model = new ChatOpenAI({ modelName: 'gpt-4' });
+    /** Bind a stop token to the model */
     const modelWithStop = model.bind({
       stop: ['\nObservation'],
     });
@@ -77,36 +74,55 @@ export class CharlesBot implements BotInterface {
         },
       }),
     ];
-    // this.memory = new BufferMemory({
-    //   returnMessages: true,
-    //   memoryKey: 'chat_history',
-    // });
+    //const prompt = await pull<PromptTemplate>('hwchase17/react-chat');
     const prompt = PromptTemplate.fromTemplate(charlesPromptTemplate);
-
     const toolNames = tools.map((tool) => tool.name);
+    const promptWithInputs = await prompt.partial({
+      tools: renderTextDescription(tools),
+      tool_names: toolNames.join(','),
+    });
+    const runnableAgent = RunnableSequence.from([
+      {
+        input: (i: {
+          input: string;
+          steps: AgentStep[];
+          chat_history: BaseMessage[];
+        }) => i.input,
+        agent_scratchpad: (i: {
+          input: string;
+          steps: AgentStep[];
+          chat_history: BaseMessage[];
+        }) => formatLogToString(i.steps),
+        chat_history: (i: {
+          input: string;
+          steps: AgentStep[];
+          chat_history: BaseMessage[];
+        }) => i.chat_history,
+      },
+      promptWithInputs,
+      modelWithStop,
+      new ReActSingleInputOutputParser({ toolNames }),
+    ]);
 
-    // const promptWithInputs = prompt.partial({
-    //   tools: renderTextDescription(this.tools),
-    //   tool_names: toolNames.join(', '),
-    // });
-
-    const executor = await initializeAgentExecutorWithOptions(tools, model, {
-      agentType: 'chat-conversational-react-description',
-      verbose: true,
+    this.setMemory(user);
+    const executor = AgentExecutor.fromAgentAndTools({
+      agent: runnableAgent,
+      tools,
       memory: this.memory,
+      verbose: true,
     });
 
     const response = await executor.call({
       input,
     });
-    this.memory.saveContext(
-      {
-        input,
-      },
-      { output: response?.response },
-    );
+    // this.memory.saveContext(
+    //   {
+    //     input,
+    //   },
+    //   { output: response },
+    // );
     this.userHistory.set(user, this.memory);
-    return response?.output;
+    return response.output;
   }
 }
 

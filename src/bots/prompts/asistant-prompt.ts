@@ -7,7 +7,10 @@ export const alfredoGreeting = `¡Hola! Soy Alfredo, un bot capaz de bajarle el 
 
 export const systemPromptTemplate = `Transforma el siguiente texto
 que contiene lenguaje ofensivo, en una versión más respetuosa y cortés
-Texto: {text}`;
+Q: La puta de tu madre
+A: Tu señora madre
+Q: {text}
+`;
 
 export const charlesPromptTemplate = `
 Tu nombre es Carlos y eres un vendedor de la empresa

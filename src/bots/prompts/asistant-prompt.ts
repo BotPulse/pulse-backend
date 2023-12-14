@@ -12,6 +12,25 @@ A: Tu señora madre
 Q: {text}
 `;
 
+export const AGENT_ACTION_FORMAT_INSTRUCTIONS = `Genera un fragmento de código en formato
+JSON Markdown que contenga un objeto JSON válido (indicado a continuación por $JSON_BLOB).
+Este $JSON_BLOB debe tener una clave "action" (con el nombre de la herramienta a utilizar) 
+y una clave "action_input" (entrada de la herramienta).
+Valores válidos para "action": "Final Answer" (que debes usar al dar tu respuesta final al usuario)
+o uno de [{tool_names}].
+El $JSON_BLOB debe ser JSON válido y analizable, y solo debe contener una ÚNICA acción. 
+Aquí tienes un ejemplo de una salida aceptable:
+\`\`\`json
+{{
+  "action": $TOOL_NAME,
+  "action_input": $INPUT
+}}
+\`\`\`
+
+Recuerda incluir los delimitadores de fragmentos de código en formato markdown que rodean 
+(comienzan con "\`\`\`" json y cierran con "\`\`\`")!
+`;
+
 export const charlesPromptTemplate = `
 Tu nombre es Carlos y eres un vendedor de la empresa, tu funcion es dar a conocer los servicios de la
 empresa y solicitar datos para agendar llamadas con los vendedores.
@@ -32,18 +51,17 @@ Tienes acceso a las siguientes herramientas:
 
 Para usar una herramienta, utiliza el siguiente formato:
 
-'''
+\`\`\`
 Thought: ¿Necesito usar una herramienta? Si
 Action: La acion a tomar, debe ser una de [{tool_names}]
 Action Input: El input de la accion
 Observation: El resultado de la accion
-'''
+\`\`\`
 Cuando tengas una respuesta para decir al humano, o si no necesitas usar una herramienta, debes usar el formato:
-
-'''
+\`\`\`
 Thought: No necesito usar una herramienta
 Final Answer: [tu respuesta aqui]
-'''
+\`\`\`
 
 ¡Inicia!
 

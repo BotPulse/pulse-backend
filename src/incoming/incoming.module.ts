@@ -30,6 +30,10 @@ import { BotFactory } from 'src/bots/bot-factory.bot';
 import { BotProvider } from 'src/bots/bot-provider';
 import { AlfredBot } from 'src/bots/alfred.bot';
 import { CharlesBot } from 'src/bots/charles.bot';
+import {
+  Appoinments,
+  AppointmentsSchema,
+} from 'src/bots/services/appointments/schemas/appointment.schema';
 @Module({
   imports: [
     HttpModule.registerAsync({
@@ -43,6 +47,10 @@ import { CharlesBot } from 'src/bots/charles.bot';
       {
         name: Status.name,
         schema: StatusesSchema,
+      },
+      {
+        name: Appoinments.name,
+        schema: AppointmentsSchema,
       },
     ]),
     OutcomingModule,

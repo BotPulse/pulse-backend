@@ -9,7 +9,7 @@ export class OutcomingController {
   @Post()
   outcomingMessage(@Body() request: WhatsappRequestMessage, @Res() response) {
     this.outcomingMessageService
-      .OutcomingMessage(request)
+      .OutcomingMessage(request, '1234')
       .then((res) => response.status(HttpStatus.CREATED).json(res))
       .catch((err) => {
         return response.status(HttpStatus.BAD_REQUEST).json(err);

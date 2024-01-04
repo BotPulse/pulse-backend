@@ -5,36 +5,36 @@ import {
   ChatPromptTemplate,
   HumanMessagePromptTemplate,
   SystemMessagePromptTemplate,
-  MessagesPlaceholder,
 } from 'langchain/prompts';
-import { BufferMemory } from 'langchain/memory';
 import { ConversationChain } from 'langchain/chains';
-//import { asistantPrompt } from './asistant-prompt';
+import { systemPromptTemplate, alfredoGreeting } from './asistant-prompt';
+import { LimitedSizeMap } from './limited-size-map';
 @Injectable()
 export class OpenAIChat {
+  //TODO implement a Queue data structure that also eliminates buffers that are 24h old
+  private conversationIniciated = new LimitedSizeMap();
+  private model = new ChatOpenAI({
+    temperature: 0,
+    openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
+  });
+  private chatPromptTemplate = ChatPromptTemplate.fromMessages([
+    SystemMessagePromptTemplate.fromTemplate(systemPromptTemplate),
+    HumanMessagePromptTemplate.fromTemplate(`{text}`),
+  ]);
+  private chain = new ConversationChain({
+    prompt: this.chatPromptTemplate,
+    llm: this.model,
+  });
   constructor(private readonly configService: ConfigService) {}
 
-  public async getAnswer(input: string): Promise<string> {
-    const openAIApiKey = this.configService.get<string>('OPENAI_API_KEY');
-    const model = new ChatOpenAI({
-      temperature: 0,
-      openAIApiKey,
-    });
-    const systemPromptTemplate = `Transforma el siguiente texto,
-    que contiene expresiones ofensivas, en una versión más respetuosa y cortés:`;
-
-    const chatPromptTemplate = ChatPromptTemplate.fromMessages([
-      SystemMessagePromptTemplate.fromTemplate(systemPromptTemplate),
-      new MessagesPlaceholder('history'),
-      HumanMessagePromptTemplate.fromTemplate(`{input}`),
-    ]);
-    const chain = new ConversationChain({
-      memory: new BufferMemory({ returnMessages: true, memoryKey: 'history' }),
-      prompt: chatPromptTemplate,
-      llm: model,
-    });
-    const response = await chain.call({
-      input,
+  public async getAnswer(user: string, input: string): Promise<string> {
+    const hasConversationIniciated = this.conversationIniciated.get(user);
+    if (!hasConversationIniciated) {
+      this.conversationIniciated.set(user, true);
+      return alfredoGreeting; 
+    }
+    const response = await this.chain.call({
+      text: input,
     });
     return response?.response;
   }

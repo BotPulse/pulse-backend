@@ -8,9 +8,6 @@ export class Appoinments {
   @Prop()
   contact_email: string;
 
-  // @Prop()
-  // appointment_date: number;
-
   @Prop()
   contact_name: string;
 

@@ -2,6 +2,8 @@ import { DynamicStructuredTool } from 'langchain/tools';
 import { Injectable } from '@nestjs/common';
 import { AppointmentsService } from '../services/appointments/appointments.service';
 import { z } from 'zod';
+
+// change this to a DynamicTool
 @Injectable()
 export class BotSaveAppointment {
   private AppointmentId: string;

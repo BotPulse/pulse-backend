@@ -14,10 +14,10 @@ import { RunnableSequence } from 'langchain/schema/runnable';
 import { AgentStep, BaseMessage } from 'langchain/schema';
 import { formatLogToString } from 'langchain/agents/format_scratchpad/log';
 import { renderTextDescription } from 'langchain/tools/render';
-import { ReActSingleInputOutputParser } from 'langchain/agents/react/output_parser';
-import { DynamicStructuredTool, DynamicTool } from 'langchain/tools';
 import { BotSaveAppointment } from './tools/bot-save-email.tool';
-import { StructuredTool } from 'langchain/tools';
+import { DynamicTool } from 'langchain/tools';
+
+//TODO: add LC components to class props
 @Injectable()
 export class CharlesBot implements BotInterface {
   private userHistory = new LimitedSizeMap();
@@ -58,7 +58,6 @@ export class CharlesBot implements BotInterface {
     const modelWithStop = model.bind({
       stop: ['\nObservation'],
     });
-    //const tools = [this.botSaveAppointment.saveEmailAppointment()];
     const tools = [
       new DynamicTool({
         name: 'saveEmail',
@@ -108,7 +107,6 @@ export class CharlesBot implements BotInterface {
       tools,
       memory: this.memory,
     });
-    //const asb= DynamicStructuredTool.
     const response = await executor.call({
       input,
     });

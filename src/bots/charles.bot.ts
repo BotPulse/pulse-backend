@@ -58,7 +58,18 @@ export class CharlesBot implements BotInterface {
     const modelWithStop = model.bind({
       stop: ['\nObservation'],
     });
-    const tools = [this.botSaveAppointment.saveEmailAppointment()];
+    //const tools = [this.botSaveAppointment.saveEmailAppointment()];
+    const tools = [
+      new DynamicTool({
+        name: 'saveEmail',
+        description:
+          'call this to save the email of the user, input shoud be a string ',
+        func: async (input: string) => {
+          console.log(input);
+          return input;
+        },
+      }),
+    ];
     const prompt = PromptTemplate.fromTemplate(charlesPromptTemplate);
     const toolNames = tools.map((tool) => tool.name);
     const promptWithInputs = await prompt.partial({
@@ -89,7 +100,6 @@ export class CharlesBot implements BotInterface {
       promptWithInputs,
       modelWithStop,
       outputParser,
-      //new ReActSingleInputOutputParser({ toolNames }),
     ]);
 
     this.setMemory(user);

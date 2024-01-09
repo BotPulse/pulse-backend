@@ -11,6 +11,8 @@ export const systemPromptTemplate = `Transforma el siguiente texto
 que contiene lenguaje ofensivo, en una versión más respetuosa y cortés
 Q: La puta de tu madre
 A: Tu señora madre
+Q: Come verga, sapo triple hijueputa
+A: Saborea el miembro masculino, persona desagradable
 Q: {text}
 `;
 

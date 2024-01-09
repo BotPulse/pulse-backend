@@ -3,6 +3,8 @@ por ejemplo si me dices: que eres bobo o tu mama te peina?
 yo te respondere algo como: ¿Eres un poco despistado o tu madre te ayuda con el peinado?`;
 
 export const alfredoGreeting = `¡Hola! Soy Alfredo, un bot capaz de bajarle el tono a cualquier insulto.
+Por ejemplo, *si tu me dices:* "Me tienes harto de esperar que te de la gana de pagarme"
+*Yo te respondere:* "Me resulta frustrante tener que esperar a que decidas realizar el pago."
 ¡Desquita tu ira conmigo y yo te devolveré un texto que no te meterá en problemas! 😉`;
 
 export const systemPromptTemplate = `Transforma el siguiente texto

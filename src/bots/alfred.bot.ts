@@ -54,7 +54,7 @@ export class AlfredBot implements BotInterface {
       return `*${response?.response}*
 
 Si te interesa implementar un bot inteligente en tu negocio,
-escribele a mi colega Carlos de botpulse, este es su numero 6969696969`;
+escribele a mi colega de botpulse, este es su numero +593994515729`;
     }
     this.conversationIniciated.set(user, {
       messageCount: userConversation.messageCount + 1,

@@ -44,7 +44,7 @@ export class AlfredBot implements BotInterface {
       this.conversationIniciated.set(user, { messageCount: 1 });
       return alfredoGreeting;
     }
-    if (userConversation && userConversation.messageCount === 3) {
+    if (userConversation && userConversation.messageCount < 2) {
       this.conversationIniciated.set(user, {
         messageCount: userConversation.messageCount + 1,
       });

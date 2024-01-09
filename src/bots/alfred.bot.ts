@@ -51,7 +51,8 @@ export class AlfredBot implements BotInterface {
       const response = await this.chain.call({
         text: input,
       });
-      return `${response?.response}... 
+      return `*${response?.response}*
+
 Si te interesa implementar un bot inteligente en tu negocio,
 escribele a mi colega Carlos de botpulse, este es su numero 6969696969`;
     }

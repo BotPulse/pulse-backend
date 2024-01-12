@@ -7,11 +7,11 @@ import { IncomingModule } from './incoming/incoming.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConversationsModule } from './conversations/conversations.module';
 import { BotsModule } from './bots/bots.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.development.env', '.env'],
     }),
     OutcomingModule,
     IncomingModule,

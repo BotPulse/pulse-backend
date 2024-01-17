@@ -6,7 +6,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
+import { jwtConstants } from './secrets/jwt.constants';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersSchema } from 'src/users/schemas/users.schema';
 @Module({

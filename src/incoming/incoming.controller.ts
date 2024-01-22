@@ -1,6 +1,6 @@
 import { Controller, Post, Req, Get, Body, Logger } from '@nestjs/common';
 import { Request } from 'express';
-import { WebhookPayload } from './dto/webhook-payload';
+import { WebhookPayload } from './dto/webhook-payload.dto';
 import { IncomingService } from './incoming.service';
 @Controller('incoming')
 export class IncomingController {

@@ -1,11 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { WebhookPayload } from './dto/webhook-payload';
+import { WebhookPayload } from './dto/webhook-payload.dto';
 import { IncomingStrategyService } from './strategies/incoming-strategy.service';
 import {
   IncomingWhatsappRequestStrategy,
   IncomingWhatsappRequestStrategyType,
 } from './strategies/strategy-interfaces';
-import { ValueKeys } from './dto/webhook-payload';
+import { ValueKeys } from './dto/webhook-payload.dto';
 
 @Injectable()
 export class IncomingService {

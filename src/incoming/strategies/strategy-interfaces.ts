@@ -1,4 +1,4 @@
-import { WebhookPayload } from '../dto/webhook-payload';
+import { WebhookPayload } from '../dto/webhook-payload.dto';
 import { CustomWhatsappAnswer } from 'src/outcoming/dto/custom-response.dto';
 import { WhatsappCloudAPIRequest } from 'src/outcoming/dto/whatsappRequest.dto';
 export interface IncomingWhatsappRequestStrategy {

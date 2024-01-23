@@ -1,15 +1,10 @@
-import {
-  Controller,
-  Post,
-  Request,
-  UseGuards,
-  Get,
-  Body,
-} from '@nestjs/common';
+import { Controller, Post, UseGuards, Get, Body, Req } from '@nestjs/common';
+import { Request } from 'express';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RefreshTokenGuard } from './guards/jwt-refresh.guard';
 import { LoginDto } from './dto/login.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -19,10 +14,18 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  // TODO: remove this sample endpoint
+  @UseGuards(RefreshTokenGuard)
+  @Get('refresh')
+  refreshTokens(@Req() req: Request) {
+    const userId = req.user['sub'];
+    const refreshToken = req.user['refreshToken'];
+    return this.authService.refreshTokens(userId, refreshToken);
+  }
+
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @Get('logout')
+  async logout(@Req() req: Request) {
+    const id = req.user['sub'];
+    this.authService.logout(id);
   }
 }

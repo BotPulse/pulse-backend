@@ -7,6 +7,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export type User = {
   email: string;
   password: string;
+  refreshToken?: string;
+  id?: string;
 };
 
 @Injectable()
@@ -42,4 +44,7 @@ export class UsersService {
     return this.usersModel.findOne({ email });
   }
 
+  async findById(id: string): Promise<User | undefined> {
+    return this.usersModel.findById(id);
+  }
 }

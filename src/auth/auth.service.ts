@@ -1,8 +1,13 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
-import { UsersService, User } from 'src/users/users.service';
+import {
+  Injectable,
+  NotAcceptableException,
+  ForbiddenException,
+} from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
+import { jwtConstants } from './secrets/jwt.constants';
 
 @Injectable()
 export class AuthService {
@@ -10,7 +15,9 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
-  async validateUser(email: string, password: string): Promise<User | null> {
+
+  //TODO: Move Sign up logic to this service
+  async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findOne(email);
     if (!user) return null;
     const passwordValid = await bcrypt.compare(password, user.password);
@@ -23,11 +30,67 @@ export class AuthService {
     return null;
   }
 
-  async login(user: LoginDto): Promise<any> {
-    const payload = { email: user.email };
+  async login(loginDto: LoginDto): Promise<any> {
+    const user = await this.validateUser(loginDto.email, loginDto.password);
+    if (user) {
+      const tokens = await this.getTokens(user._id, user.email);
+      await this.updateRefreshToken(user._id, tokens.refreshToken);
+      return tokens;
+    }
+  }
+
+  async logout(userId: string) {
+    return this.usersService.update(userId, { refreshToken: null });
+  }
+
+  async updateRefreshToken(userId: string, refreshToken: string) {
+    const saltOrRounds = 10;
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, saltOrRounds);
+    await this.usersService.update(userId, {
+      refreshToken: hashedRefreshToken,
+    });
+  }
+  async getTokens(userId: string, email: string) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(
+        {
+          sub: userId,
+          email,
+        },
+        {
+          secret: jwtConstants.JWT_ACCESS_SECRET,
+          expiresIn: '15m',
+        },
+      ),
+      this.jwtService.signAsync(
+        {
+          sub: userId,
+          email,
+        },
+        {
+          secret: jwtConstants.JWT_REFRESH_SECRET,
+          expiresIn: '7d',
+        },
+      ),
+    ]);
 
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken,
+      refreshToken,
     };
+  }
+
+  async refreshTokens(userId: string, refreshToken: string) {
+    const user = await this.usersService.findById(userId);
+    if (!user || !user.refreshToken)
+      throw new ForbiddenException('Access Denied');
+    const refreshTokenMatches = await bcrypt.compare(
+      refreshToken,
+      user.refreshToken,
+    );
+    if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
   }
 }

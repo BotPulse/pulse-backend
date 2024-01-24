@@ -1,19 +1,42 @@
-import { Controller, Post, UseGuards, Get, Body, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Get,
+  Body,
+  Req,
+  HttpCode,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { RefreshTokenGuard } from './guards/jwt-refresh.guard';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiUnauthorizedResponse,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { TokenResponseDto } from './dto/token.dto';
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() user: LoginDto) {
-    return this.authService.login(user);
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful',
+    type: TokenResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'User not found or invalid password',
+  })
+  async login(@Body() user: LoginDto): Promise<TokenResponseDto> {
+    return await this.authService.login(user);
   }
 
   @UseGuards(RefreshTokenGuard)

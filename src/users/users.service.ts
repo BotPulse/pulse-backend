@@ -8,7 +8,7 @@ export type User = {
   email: string;
   password: string;
   refreshToken?: string;
-  id?: string;
+  _id: string;
 };
 
 @Injectable()

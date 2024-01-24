@@ -2,12 +2,14 @@ import {
   Injectable,
   NotAcceptableException,
   ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService, User } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { jwtConstants } from './secrets/jwt.constants';
+import { TokenResponseDto } from './dto/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,26 +18,45 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  //TODO: Move Sign up logic to this service
-  async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.usersService.findOne(email);
-    if (!user) return null;
-    const passwordValid = await bcrypt.compare(password, user.password);
-    if (!user) {
-      throw new NotAcceptableException('could not find the user');
-    }
-    if (user && passwordValid) {
+  async validateUser(email: string, password: string): Promise<User> {
+    try {
+      const user = await this.usersService.findOne(email);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+      const passwordValid = await bcrypt.compare(password, user.password);
+      if (!passwordValid) {
+        throw new UnauthorizedException('Invalid password');
+      }
       return user;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      } else {
+        throw new NotAcceptableException(
+          'An error occurred while validating the user',
+        );
+      }
     }
-    return null;
   }
 
-  async login(loginDto: LoginDto): Promise<any> {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
-    if (user) {
-      const tokens = await this.getTokens(user._id, user.email);
-      await this.updateRefreshToken(user._id, tokens.refreshToken);
-      return tokens;
+  async login(loginDto: LoginDto): Promise<TokenResponseDto> {
+    try {
+      const user = await this.validateUser(loginDto.email, loginDto.password);
+
+      if (user) {
+        const tokens = await this.getTokens(user._id, user.email);
+        await this.updateRefreshToken(user._id, tokens.refreshToken);
+        return tokens;
+      }
+
+      throw new UnauthorizedException('User not found');
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      } else {
+        throw new NotAcceptableException('Error during login process');
+      }
     }
   }
 
@@ -89,8 +110,8 @@ export class AuthService {
       user.refreshToken,
     );
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
-    const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    const tokens = await this.getTokens(user._id, user.email);
+    await this.updateRefreshToken(user._id, tokens.refreshToken);
     return tokens;
   }
 }

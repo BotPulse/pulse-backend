@@ -17,8 +17,10 @@ import {
   ApiBearerAuth,
   ApiUnauthorizedResponse,
   ApiResponse,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { TokenResponseDto } from './dto/token.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -42,10 +44,15 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
   @ApiBearerAuth('accessToken')
-  refreshTokens(@Req() req: Request) {
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful',
+    type: TokenResponseDto,
+  })
+  async refreshTokens(@Req() req: Request) {
     const userId = req.user['sub'];
     const refreshToken = req.user['refreshToken'];
-    return this.authService.refreshTokens(userId, refreshToken);
+    return await this.authService.refreshTokens(userId, refreshToken);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -53,6 +60,17 @@ export class AuthController {
   @ApiBearerAuth('accessToken')
   async logout(@Req() req: Request) {
     const id = req.user['sub'];
-    this.authService.logout(id);
+    await this.authService.logout(id);
+  }
+
+  @Post('signup')
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful',
+    type: TokenResponseDto,
+  })
+  @ApiBadRequestResponse({ description: 'User already exists' })
+  async signUp(@Body() createUserDto: CreateUserDto) {
+    return await this.authService.signUp(createUserDto);
   }
 }

@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument } from './schemas/users.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 export type User = {
   email: string;
   password: string;
   refreshToken?: string;
-  id?: string;
+  _id: string;
 };
 
 @Injectable()
@@ -17,34 +18,51 @@ export class UsersService {
     @InjectModel('user') private readonly usersModel: Model<UserDocument>,
   ) {}
 
-  async create({
-    email,
-    password,
-    firstName,
-    lastName,
-  }: CreateUserDto): Promise<User> {
-    return this.usersModel.create({
-      email,
-      password,
-      firstName,
-      lastName,
-    });
+  async create(createUser: CreateUserDto): Promise<UserDocument> {
+    const user = new this.usersModel(createUser);
+    return user.save();
   }
 
-  async update(
-    id: string,
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserDocument> {
-    return this.usersModel
-      .findByIdAndUpdate(id, updateUserDto, { new: true })
-      .exec();
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<any> {
+    try {
+      return await this.usersModel
+        .findByIdAndUpdate(id, updateUserDto, { new: true })
+        .select(['-password', '-refreshToken'])
+        .exec();
+    } catch (error) {
+      throw new BadRequestException('Error while updating user');
+    }
   }
 
   async findOne(email: string): Promise<User | undefined> {
-    return this.usersModel.findOne({ email });
+    return await this.usersModel.findOne({ email }).exec();
   }
 
   async findById(id: string): Promise<User | undefined> {
     return this.usersModel.findById(id);
+  }
+
+  
+  async updateRefreshToken(id: string, refreshToken: RefreshTokenDto) {
+    try {
+      return await this.usersModel
+        .findByIdAndUpdate(id, refreshToken, { new: true })
+        .select(['-password', '-refreshToken'])
+        .exec();
+    } catch (error) {
+      console.log(`updateRefreshToken error: ${error}`);
+      throw new BadRequestException('Error while updating user');
+    }
+  }
+  async deleteRefreshToken(id: string) {
+    try {
+      return await this.usersModel
+        .updateOne({ _id: id }, { $unset: { refreshToken: 1 } })
+        .select('-password')
+        .exec();
+    } catch (error) {
+      console.log(`deleteRefreshToken error: ${error}`);
+      throw new BadRequestException('Error while updating user');
+    }
   }
 }

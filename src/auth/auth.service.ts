@@ -1,14 +1,17 @@
 import {
   Injectable,
   NotAcceptableException,
+  BadRequestException,
   ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService, User } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { jwtConstants } from './secrets/jwt.constants';
-
+import { TokenResponseDto } from './dto/token.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -16,40 +19,74 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  //TODO: Move Sign up logic to this service
-  async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.usersService.findOne(email);
-    if (!user) return null;
-    const passwordValid = await bcrypt.compare(password, user.password);
-    if (!user) {
-      throw new NotAcceptableException('could not find the user');
-    }
-    if (user && passwordValid) {
+  async validateUser(email: string, password: string): Promise<User> {
+    try {
+      const user = await this.usersService.findOne(email);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+      const passwordValid = await bcrypt.compare(password, user.password);
+      if (!passwordValid) {
+        throw new UnauthorizedException('Invalid password');
+      }
       return user;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      } else {
+        throw new NotAcceptableException(
+          'An error occurred while validating the user',
+        );
+      }
     }
-    return null;
   }
 
-  async login(loginDto: LoginDto): Promise<any> {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
-    if (user) {
-      const tokens = await this.getTokens(user._id, user.email);
-      await this.updateRefreshToken(user._id, tokens.refreshToken);
-      return tokens;
+  async login(loginDto: LoginDto): Promise<TokenResponseDto> {
+    try {
+      const user = await this.validateUser(loginDto.email, loginDto.password);
+      if (user) {
+        const tokens = await this.getTokens(user._id, user.email);
+        await this.usersService.updateRefreshToken(user._id, {
+          refreshToken: await this.hashData(tokens.refreshToken),
+        });
+        return tokens;
+      }
+      throw new UnauthorizedException('User not found');
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      } else {
+        throw new NotAcceptableException('Error during login process');
+      }
     }
+  }
+  async signUp(createUserDto: CreateUserDto): Promise<any> {
+    const userExists = await this.usersService.findOne(createUserDto.email);
+    if (userExists) {
+      throw new BadRequestException('User already exists');
+    }
+    const hash = await this.hashData(createUserDto.password);
+    const newUser = await this.usersService.create({
+      ...createUserDto,
+      password: hash,
+    });
+    const tokens = await this.getTokens(newUser._id, newUser.email);
+    await this.usersService.updateRefreshToken(newUser._id, {
+      refreshToken: await this.hashData(tokens.refreshToken),
+    });
+    return tokens;
+  }
+
+  private async hashData(password: string): Promise<string> {
+    const saltOrRounds = 10;
+    const result = await bcrypt.hash(password, saltOrRounds);
+    return result;
   }
 
   async logout(userId: string) {
-    return this.usersService.update(userId, { refreshToken: null });
+    return this.usersService.deleteRefreshToken(userId);
   }
 
-  async updateRefreshToken(userId: string, refreshToken: string) {
-    const saltOrRounds = 10;
-    const hashedRefreshToken = await bcrypt.hash(refreshToken, saltOrRounds);
-    await this.usersService.update(userId, {
-      refreshToken: hashedRefreshToken,
-    });
-  }
   async getTokens(userId: string, email: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
@@ -82,6 +119,7 @@ export class AuthService {
 
   async refreshTokens(userId: string, refreshToken: string) {
     const user = await this.usersService.findById(userId);
+
     if (!user || !user.refreshToken)
       throw new ForbiddenException('Access Denied');
     const refreshTokenMatches = await bcrypt.compare(
@@ -89,8 +127,11 @@ export class AuthService {
       user.refreshToken,
     );
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
-    const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    const tokens = await this.getTokens(user._id, user.email);
+    await this.usersService.updateRefreshToken(user._id, {
+      refreshToken: await this.hashData(tokens.refreshToken),
+    });
+
     return tokens;
   }
 }

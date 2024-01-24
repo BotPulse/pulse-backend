@@ -4,26 +4,17 @@ import { User } from './users.service';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('/signup')
-  async createUser(@Body() user: CreateUserDto): Promise<User> {
-    const { email, password, firstName, lastName } = user;
-    const saltOrRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltOrRounds);
-    const result = await this.usersService.create({
-      email,
-      password: hashedPassword,
-      firstName,
-      lastName,
-    });
-    return result;
-    //return this.usersService.createUser({ email, password });
-  }
-
+  //TODO: add authorization, this endpoint should only be accessible by admin.
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('accessToken')
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,

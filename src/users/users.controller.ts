@@ -11,20 +11,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @Post('/signup')
-  // async createUser(@Body() user: CreateUserDto): Promise<any> {
-  //   const { email, password, firstName, lastName } = user;
-  //   const saltOrRounds = 10;
-  //   const hashedPassword = await bcrypt.hash(password, saltOrRounds);
-  //   const result = await this.usersService.create({
-  //     email,
-  //     password: hashedPassword,
-  //     firstName,
-  //     lastName,
-  //   });
-  //   return result;
-  // }
-
+  //TODO: add authorization, this endpoint should only be accessible by admin.
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('accessToken')

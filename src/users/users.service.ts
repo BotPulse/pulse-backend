@@ -32,12 +32,11 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<any> {
-    console.log(updateUserDto);
     try {
-      await this.usersModel
+      return await this.usersModel
         .findByIdAndUpdate(id, updateUserDto, { new: true })
+        .select(['-password', '-refreshToken'])
         .exec();
-      return { status: 'success' };
     } catch (error) {
       throw new BadRequestException('Error while updating user');
     }

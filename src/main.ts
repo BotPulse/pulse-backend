@@ -9,6 +9,17 @@ async function bootstrap() {
     .setDescription('Bot Pulse API')
     .setVersion('1.0')
     .addTag('botpulse')
+    .addBearerAuth(
+      {
+        description: `Enter JWT Authorization header using the Bearer scheme. Enter "Bearer {token}"`,
+        name: 'Authorization',
+        bearerFormat: 'Bearer',
+        scheme: 'Bearer',
+        type: 'http',
+        in: 'Header',
+      },
+      'accessToken',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

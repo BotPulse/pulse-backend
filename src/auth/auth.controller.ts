@@ -46,7 +46,7 @@ export class AuthController {
   @ApiBearerAuth('accessToken')
   @ApiResponse({
     status: 200,
-    description: 'Login successful',
+    description: 'Token refreshed successfully',
     type: TokenResponseDto,
   })
   async refreshTokens(@Req() req: Request) {
@@ -66,7 +66,7 @@ export class AuthController {
   @Post('signup')
   @ApiResponse({
     status: 200,
-    description: 'Login successful',
+    description: 'User created successfully',
     type: TokenResponseDto,
   })
   @ApiBadRequestResponse({ description: 'User already exists' })

@@ -42,9 +42,7 @@ export class UsersService {
     return this.usersModel.findById(id);
   }
 
-  async findByEmail(email: string): Promise<User | undefined> {
-    return this.usersModel.findOne({ email });
-  }
+  
   async updateRefreshToken(id: string, refreshToken: RefreshTokenDto) {
     try {
       return await this.usersModel

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument } from './schemas/users.schema';
@@ -31,13 +31,16 @@ export class UsersService {
     });
   }
 
-  async update(
-    id: string,
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserDocument> {
-    return this.usersModel
-      .findByIdAndUpdate(id, updateUserDto, { new: true })
-      .exec();
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<any> {
+    console.log(updateUserDto);
+    try {
+      await this.usersModel
+        .findByIdAndUpdate(id, updateUserDto, { new: true })
+        .exec();
+      return { status: 'success' };
+    } catch (error) {
+      throw new BadRequestException('Error while updating user');
+    }
   }
 
   async findOne(email: string): Promise<User | undefined> {

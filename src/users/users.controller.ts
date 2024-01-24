@@ -4,6 +4,9 @@ import { User } from './users.service';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -20,10 +23,11 @@ export class UsersController {
       lastName,
     });
     return result;
-    //return this.usersService.createUser({ email, password });
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('accessToken')
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,

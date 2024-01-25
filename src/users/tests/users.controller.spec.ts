@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
 import { userStub } from './stubs/users.stubs';
-import { User } from '../users.service';
+import { UserDto } from '../dto/user.dto';
 
 jest.mock('../users.service');
 
@@ -22,7 +22,7 @@ describe('UsersController', () => {
   });
   describe('updateUser', () => {
     describe('When getUser is called', () => {
-      let user: User;
+      let user: UserDto;
       beforeEach(async () => {
         user = await usersController.updateUser(userStub()._id, {
           lastName: 'b',

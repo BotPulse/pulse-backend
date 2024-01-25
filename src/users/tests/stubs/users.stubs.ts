@@ -1,5 +1,5 @@
-import { User } from '../../users.service';
-export const userStub = (): User => {
+import { UserDto } from '../../dto/user.dto';
+export const userStub = (): UserDto => {
   return {
     _id: '1',
     email: 'a@a.com',

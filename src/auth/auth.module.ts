@@ -9,11 +9,12 @@ import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersSchema } from 'src/users/schemas/users.schema';
+import { User } from 'src/users/schemas/users.schema';
 @Module({
   imports: [
     UsersModule,
     PassportModule,
-    MongooseModule.forFeature([{ name: 'User', schema: UsersSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UsersSchema }]),
     JwtModule.register({}),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, RefreshTokenStrategy],

@@ -5,13 +5,15 @@ import {
   ForbiddenException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService, User } from '../users/users.service';
+import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { jwtConstants } from './secrets/jwt.constants';
 import { TokenResponseDto } from './dto/token.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UserDto } from '../users/dto/user.dto';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -19,7 +21,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<User> {
+  async validateUser(email: string, password: string): Promise<UserDto> {
     try {
       const user = await this.usersService.findOne(email);
       if (!user) {
@@ -60,7 +62,7 @@ export class AuthService {
       }
     }
   }
-  async signUp(createUserDto: CreateUserDto): Promise<any> {
+  async signUp(createUserDto: CreateUserDto): Promise<TokenResponseDto> {
     const userExists = await this.usersService.findOne(createUserDto.email);
     if (userExists) {
       throw new BadRequestException('User already exists');
@@ -87,7 +89,7 @@ export class AuthService {
     return this.usersService.deleteRefreshToken(userId);
   }
 
-  async getTokens(userId: string, email: string) {
+  async getTokens(userId: string, email: string): Promise<TokenResponseDto> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -117,7 +119,10 @@ export class AuthService {
     };
   }
 
-  async refreshTokens(userId: string, refreshToken: string) {
+  async refreshTokens(
+    userId: string,
+    refreshToken: string,
+  ): Promise<TokenResponseDto> {
     const user = await this.usersService.findById(userId);
 
     if (!user || !user.refreshToken)

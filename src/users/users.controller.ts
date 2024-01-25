@@ -1,11 +1,8 @@
-import { Controller, Post, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Body, Patch, Param, Get } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from './users.service';
-import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 @Controller('users')
 export class UsersController {

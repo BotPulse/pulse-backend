@@ -36,9 +36,12 @@ export class UsersService {
   async findById(id: string): Promise<UserDto | undefined> {
     return this.usersModel.findById(id);
   }
-  async updateRefreshToken(id: string, refreshToken: RefreshTokenDto) {
+  async updateRefreshToken(
+    id: string,
+    refreshToken: RefreshTokenDto,
+  ): Promise<void> {
     try {
-      return await this.usersModel
+      await this.usersModel
         .findByIdAndUpdate(id, refreshToken, { new: true })
         .select(['-password', '-refreshToken'])
         .exec();

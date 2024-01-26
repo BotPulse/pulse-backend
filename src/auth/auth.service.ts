@@ -79,7 +79,7 @@ export class AuthService {
     return tokens;
   }
 
-  private async hashData(password: string): Promise<string> {
+  async hashData(password: string): Promise<string> {
     const saltOrRounds = 10;
     const result = await bcrypt.hash(password, saltOrRounds);
     return result;

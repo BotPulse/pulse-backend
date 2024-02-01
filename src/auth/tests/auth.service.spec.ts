@@ -8,14 +8,17 @@ import { userStub } from '../../users/tests/stubs/users.stubs';
 import { LoginDto } from '../dto/login.dto';
 import { UserDto } from '../../users/dto/user.dto';
 import { UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 describe('Auth Service Tests', () => {
   let authService: AuthService;
   let usersService: jest.Mocked<UsersService>;
+  let jwtService: jest.Mocked<JwtService>;
   beforeEach(async () => {
     const { unit, unitRef } = TestBed.create(AuthService).compile();
     authService = unit;
     usersService = unitRef.get<UsersService>(UsersService);
+    jwtService = unitRef.get<JwtService>(JwtService);
   });
   describe('Auth service validateUsers success', () => {
     let user: UserDto;
@@ -81,11 +84,17 @@ describe('Auth Service Tests', () => {
       let hashedPassword: string;
       beforeEach(async () => {
         hashedPassword = await authService.hashData(loginStub().password);
+        jwtService.signAsync.mockResolvedValueOnce(
+          tokenResponseStub().accessToken,
+        );
+        jwtService.signAsync.mockResolvedValueOnce(
+          tokenResponseStub().refreshToken,
+        );
         usersService.findOne.mockResolvedValue({
           ...userStub(),
           password: hashedPassword,
         });
-        usersService.updateRefreshToken.mockResolvedValue();
+        usersService.updateRefreshToken.mockImplementation();
         tokenResponse = await authService.login(loginStub());
       });
       test('Then it should return a set of JWT tokens', async () => {
@@ -93,4 +102,28 @@ describe('Auth Service Tests', () => {
       });
     });
   });
+
+  describe('getTokens Test', () => {
+    describe('getTokens method is called', () => {
+      let tokenResponse: TokenResponseDto;
+
+      beforeEach(async () => {
+        jwtService.signAsync.mockResolvedValueOnce(
+          tokenResponseStub().accessToken,
+        );
+        jwtService.signAsync.mockResolvedValueOnce(
+          tokenResponseStub().refreshToken,
+        );
+        tokenResponse = await authService.getTokens(
+          userStub()._id,
+          userStub().email,
+        );
+      });
+      test('Then it should return a set of JWT tokens', async () => {
+        expect(tokenResponse).toEqual(tokenResponseStub());
+      });
+    });
+  });
+
+  // TODO: Create a test for getTokens
 });

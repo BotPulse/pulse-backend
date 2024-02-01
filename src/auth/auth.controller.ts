@@ -49,7 +49,7 @@ export class AuthController {
     description: 'Token refreshed successfully',
     type: TokenResponseDto,
   })
-  async refreshTokens(@Req() req: Request) {
+  async refreshTokens(@Req() req: Request): Promise<TokenResponseDto> {
     const userId = req.user['sub'];
     const refreshToken = req.user['refreshToken'];
     return await this.authService.refreshTokens(userId, refreshToken);
@@ -58,6 +58,11 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('logout')
   @ApiBearerAuth('accessToken')
+  @ApiResponse({
+    status: 200,
+    description: 'Logout successful',
+  })
+  @ApiUnauthorizedResponse({ description: 'Invalid token' })
   async logout(@Req() req: Request) {
     const id = req.user['sub'];
     await this.authService.logout(id);

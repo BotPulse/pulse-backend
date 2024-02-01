@@ -1,29 +1,24 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDocument } from './schemas/users.schema';
+import { User, UserDocument } from './schemas/users.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-export type User = {
-  email: string;
-  password: string;
-  refreshToken?: string;
-  _id: string;
-};
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel('user') private readonly usersModel: Model<UserDocument>,
+    @InjectModel(User.name) private readonly usersModel: Model<UserDocument>,
   ) {}
 
-  async create(createUser: CreateUserDto): Promise<UserDocument> {
+  async create(createUser: CreateUserDto): Promise<UserDto> {
     const user = new this.usersModel(createUser);
     return user.save();
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<any> {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserDto> {
     try {
       return await this.usersModel
         .findByIdAndUpdate(id, updateUserDto, { new: true })
@@ -34,18 +29,19 @@ export class UsersService {
     }
   }
 
-  async findOne(email: string): Promise<User | undefined> {
+  async findOne(email: string): Promise<UserDto | undefined> {
     return await this.usersModel.findOne({ email }).exec();
   }
 
-  async findById(id: string): Promise<User | undefined> {
+  async findById(id: string): Promise<UserDto | undefined> {
     return this.usersModel.findById(id);
   }
-
-  
-  async updateRefreshToken(id: string, refreshToken: RefreshTokenDto) {
+  async updateRefreshToken(
+    id: string,
+    refreshToken: RefreshTokenDto,
+  ): Promise<void> {
     try {
-      return await this.usersModel
+      await this.usersModel
         .findByIdAndUpdate(id, refreshToken, { new: true })
         .select(['-password', '-refreshToken'])
         .exec();

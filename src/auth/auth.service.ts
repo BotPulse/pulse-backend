@@ -13,12 +13,13 @@ import { jwtConstants } from './secrets/jwt.constants';
 import { TokenResponseDto } from './dto/token.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserDto } from '../users/dto/user.dto';
-
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<UserDto> {
@@ -90,6 +91,8 @@ export class AuthService {
   }
 
   async getTokens(userId: string, email: string): Promise<TokenResponseDto> {
+    const accessExpire = this.configService.get<string>('JWT_ACCESS_EXPIRE');
+    const refreshExpire = this.configService.get<string>('JWT_REFRESH_EXPIRE');
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -98,7 +101,7 @@ export class AuthService {
         },
         {
           secret: jwtConstants.JWT_ACCESS_SECRET,
-          expiresIn: '1m',
+          expiresIn: accessExpire,
         },
       ),
       this.jwtService.signAsync(
@@ -108,7 +111,7 @@ export class AuthService {
         },
         {
           secret: jwtConstants.JWT_REFRESH_SECRET,
-          expiresIn: '7d',
+          expiresIn: refreshExpire,
         },
       ),
     ]);

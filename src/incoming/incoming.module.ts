@@ -11,6 +11,7 @@ import { OpenAIChat } from './chains/main-chain';
 import { UnknownPayloadStrategyProvider } from './strategies/unknown-message.service';
 import { TextMessageStrategyProvider } from './strategies/text-message.strategy';
 import { MessageStatusStrategyProvider } from './strategies/message-status.strategy';
+import { AudioMessageStrategyProvider } from './strategies/audio-message.strategy';
 import { StrategiesMapProvider } from './strategies/strategies-map.provider';
 import { ConversationsService } from 'src/conversations/conversations.service';
 import { ConversationsModule } from 'src/conversations/conversations.module';
@@ -30,6 +31,7 @@ import { BotFactory } from 'src/bots/bot-factory.bot';
 import { BotProvider } from 'src/bots/bot-provider';
 import { AlfredBot } from 'src/bots/alfred.bot';
 import { CharlesBot } from 'src/bots/charles.bot';
+import { EchoBot } from 'src/bots/echo.bot';
 import {
   Appoinments,
   AppointmentsSchema,
@@ -63,9 +65,10 @@ import {
     IncomingService,
     OutcomingService,
     IncomingStrategyService,
+    TextMessageStrategyProvider,
+    AudioMessageStrategyProvider,
     UnknownPayloadStrategyProvider,
     MessageStatusStrategyProvider,
-    TextMessageStrategyProvider,
     OpenAIChat,
     StrategiesMapProvider,
     ConversationsService,
@@ -75,6 +78,7 @@ import {
     BotProvider,
     AlfredBot,
     CharlesBot,
+    EchoBot,
   ],
   controllers: [IncomingController],
 })

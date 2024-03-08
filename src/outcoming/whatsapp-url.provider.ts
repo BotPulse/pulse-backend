@@ -2,7 +2,7 @@ import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 const generateWhatsappUrl = (id: string) =>
-  `https://graph.facebook.com/v17.0/${id}/messages`;
+  `https://graph.facebook.com/v18.0/${id}/messages`;
 
 export const WhatsappUrlProvider: Provider = {
   provide: 'WhatsappUrlMap',
@@ -15,6 +15,10 @@ export const WhatsappUrlProvider: Provider = {
       [
         configService.get<string>('ALFRED_WA_ID'),
         generateWhatsappUrl(configService.get<string>('ALFRED_NUMBER_ID')),
+      ],
+      [
+        configService.get<string>('ECHO_WA_ID'),
+        generateWhatsappUrl(configService.get<string>('ECHO_NUMBER_ID')),
       ],
     ]),
   inject: [ConfigService],

@@ -3,31 +3,23 @@ import { IncomingWhatsappRequestStrategy } from './strategy-interfaces';
 import { Logger } from '@nestjs/common';
 import { WebhookPayload } from '../dto/webhook-payload.dto';
 import { OutcomingService } from 'src/outcoming/outcoming.service';
-import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { OpenAIWhisperAudio } from 'langchain/document_loaders/fs/openai_whisper_audio';
-
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
   constructor(
     private readonly outcomingService: OutcomingService,
     private configService: ConfigService,
+    private httpService: HttpService,
   ) {}
   private logger = new Logger('AudioMessageStrategy');
 
   async downloadFile(url: string, fileName: string) {
-    const downloadAudio = await axios.get(url, {
-      responseType: 'stream',
-
-      headers: {
-        Authorization: `Bearer ${this.configService.get<string>(
-          'WHATSAPP_BEARER_TOKEN',
-        )}`,
-      },
-    });
-    const tempFilePath = path.join(
+    const tempFilePath = path.resolve(
       __dirname,
       '..',
       '..',
@@ -35,14 +27,23 @@ export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
       'temp',
       `${fileName}.ogg`,
     );
-    const writer = fs.createWriteStream(tempFilePath);
+    try {
+      const downloadAudio = await firstValueFrom(
+        this.httpService.get(url, {
+          responseType: 'stream',
+        }),
+      );
+      const writer = fs.createWriteStream(tempFilePath);
 
-    downloadAudio.data.pipe(writer);
+      downloadAudio.data.pipe(writer);
 
-    return new Promise((resolve, reject) => {
-      writer.on('finish', () => resolve(tempFilePath));
-      writer.on('error', reject);
-    });
+      return new Promise((resolve, reject) => {
+        writer.on('finish', () => resolve(tempFilePath));
+        writer.on('error', reject);
+      });
+    } catch (error) {
+      throw new Error('Error downloading file');
+    }
   }
 
   async submitAudio(audioPath: string): Promise<any> {
@@ -54,22 +55,17 @@ export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
     fs.removeSync(filePath);
   }
   async handleRequest(requestBody: WebhookPayload): Promise<any> {
+    this.logger.log('Audio message received');
     const value = requestBody.entry[0].changes[0].value;
     const audioId = value.messages[0].audio.id;
     const displayPhoneNumber = value.metadata.display_phone_number;
-    const getAudioURL = `https://graph.facebook.com/v19.0/${audioId}/`;
-    const audioUrl = await axios.get(getAudioURL, {
-      headers: {
-        Authorization: `Bearer ${this.configService.get<string>(
-          'WHATSAPP_BEARER_TOKEN',
-        )}`,
-      },
-    });
+    const getAudioURL = `${this.configService.get<string>(
+      'META_MEDIA_URL',
+    )}${audioId}/`;
+    const audioUrl = await firstValueFrom(this.httpService.get(getAudioURL));
     const downloadURL = audioUrl.data.url;
-
     await this.downloadFile(downloadURL, audioId);
-
-    const tempFilePath = path.join(
+    const tempFilePath = path.resolve(
       __dirname,
       '..',
       '..',
@@ -79,6 +75,7 @@ export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
     );
     const speechToText = await this.submitAudio(tempFilePath);
     const text = speechToText[0].pageContent;
+    this.logger.log(text);
     const response = {
       messaging_product: 'whatsapp',
       recipient_type: 'individual',

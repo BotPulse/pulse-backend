@@ -9,6 +9,7 @@ import { ConversationsModule } from './conversations/conversations.module';
 import { BotsModule } from './bots/bots.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { BpassistantModule } from './bpassistant/bpassistant.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +28,7 @@ import { UsersModule } from './users/users.module';
     BotsModule,
     AuthModule,
     UsersModule,
+    BpassistantModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { MessagesType, WebhookPayload } from './dto/webhook-payload.dto';
+import { WebhookPayload } from './dto/webhook-payload.dto';
 import { IncomingStrategyService } from './strategies/incoming-strategy.service';
 import {
   IncomingWhatsappRequestStrategy,

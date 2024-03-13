@@ -1,4 +1,4 @@
-import { Injectable, Provider } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IncomingWhatsappRequestStrategy } from './strategy-interfaces';
 import { Logger } from '@nestjs/common';
 import { WebhookPayload } from '../dto/webhook-payload.dto';
@@ -75,6 +75,10 @@ export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
     );
     const speechToText = await this.submitAudio(tempFilePath);
     const text = speechToText[0].pageContent;
+    const formattedText = `🔊: ${text}
+    
+*Disclaimer: No almacenamos datos de tus audios ni textos generados de los mismos.*
+    `;
     this.logger.log(text);
     const response = {
       messaging_product: 'whatsapp',
@@ -84,7 +88,7 @@ export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
       type: 'text',
       text: {
         preview_url: false,
-        body: text,
+        body: formattedText,
       },
     };
     this.outcomingService.OutcomingMessage(response, displayPhoneNumber);
@@ -92,8 +96,3 @@ export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
     return requestBody;
   }
 }
-
-export const AudioMessageStrategyProvider: Provider = {
-  provide: AudioMessageStrategy,
-  useClass: AudioMessageStrategy,
-};

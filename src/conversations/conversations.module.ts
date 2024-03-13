@@ -6,6 +6,11 @@ import {
   ConversationSchema,
 } from './schemas/conversations.schema';
 import { Status, StatusesSchema } from './schemas/statuses.schema';
+import {
+  AuthNumbers,
+  AuthNumbersSchema,
+} from './schemas/authorized-numbers.schema';
+import { AuthNumbersService } from './auth-numbers/auth-numbers.service';
 import { MessagesService } from './messages/messages.service';
 import { StatusesService } from './statuses/statuses.service';
 
@@ -20,9 +25,18 @@ import { StatusesService } from './statuses/statuses.service';
         name: Status.name,
         schema: StatusesSchema,
       },
+      {
+        name: AuthNumbers.name,
+        schema: AuthNumbersSchema,
+      },
     ]),
   ],
-  providers: [ConversationsService, MessagesService, StatusesService],
-  exports: [ConversationsService],
+  providers: [
+    ConversationsService,
+    MessagesService,
+    StatusesService,
+    AuthNumbersService,
+  ],
+  exports: [ConversationsService, AuthNumbersService],
 })
 export class ConversationsModule {}

@@ -21,8 +21,17 @@ import { MongooseModule } from '@nestjs/mongoose';
     ]),
     ConfigModule,
   ],
-  exports: [BotsService, AppointmentsService, BotSaveAppointment],
   providers: [
+    BotsService,
+    AlfredBot,
+    CharlesBot,
+    EchoBot,
+    BotProvider,
+    BotFactory,
+    AppointmentsService,
+    BotSaveAppointment,
+  ],
+  exports: [
     BotsService,
     AlfredBot,
     CharlesBot,

@@ -10,9 +10,9 @@ export class EchoBot implements BotInterface {
   public getPhoneNumber(): string {
     return '';
   }
-  public getAnswer(user: string, input: string): Promise<string> {
+  public getAnswer(user: string, input: string): any {
     const answer = `🤖: ${input}`;
-    return Promise.resolve(answer);
+    return answer;
   }
 }
 

@@ -9,7 +9,14 @@ export interface IncomingWhatsappRequestStrategy {
 
 export enum IncomingWhatsappRequestStrategyType {
   STATUS = 'status',
-  TEXT = 'text',
+  UNKNOWN = 'unknown',
+  MESSAGES = 'messages',
   AUDIO = 'audio',
+  TEXT = 'text',
+}
+
+export enum MessagesTypes {
+  AUDIO = 'audio',
+  TEXT = 'text',
   UNKNOWN = 'unknown',
 }

@@ -24,14 +24,15 @@ export class IncomingService {
     const value = requestBody.entry[0].changes[0].value;
     const strategies = this.strategiesMap;
     if (value.hasOwnProperty(ValueKeys.MESSAGES)) {
-      const type = value.messages[0].type;
+      const messages = value.messages;
+      const type = messages[0].type;
       return (
-        strategies.get(
+        (strategies.get(
           type as unknown as IncomingWhatsappRequestStrategyType,
-        ) || strategies.get(IncomingWhatsappRequestStrategyType.UNKNOWN)
+        ) as IncomingWhatsappRequestStrategy) ||
+        strategies.get(IncomingWhatsappRequestStrategyType.UNKNOWN)
       );
     }
-
     if (value.hasOwnProperty(ValueKeys.STATUSES)) {
       return strategies.get(IncomingWhatsappRequestStrategyType.STATUS);
     }
@@ -39,15 +40,8 @@ export class IncomingService {
     return strategies.get(IncomingWhatsappRequestStrategyType.UNKNOWN);
   }
 
-  private createStrategy(
-    requestBody: WebhookPayload,
-  ): IncomingWhatsappRequestStrategy {
-    const strategyFactory = this.getStrategyFactory(requestBody);
-    return strategyFactory;
-  }
-
   public async processMessage(body: WebhookPayload): Promise<string> {
-    const strategy = this.createStrategy(body);
+    const strategy = this.getStrategyFactory(body);
     this.incomingStrategyService.setStategy(strategy);
     await this.incomingStrategyService.handleRequest(body);
     return 'ok';

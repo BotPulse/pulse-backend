@@ -20,7 +20,7 @@ export class UnknownPayloadStrategy implements IncomingWhatsappRequestStrategy {
       type: 'text',
       text: {
         preview_url: false,
-        body: 'Lo siento, no puedo responder mensajes de audio o multimedia 🙈',
+        body: 'Lo siento, no puedo responder mensajes de ese tipo 🙈',
       },
     };
     this.outcomingService.OutcomingMessage(response, displayPhoneNumber);

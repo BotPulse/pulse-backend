@@ -46,12 +46,17 @@ export class Messages {
   from: string;
   id: string;
   timestamp: string;
-  text: Text;
+  text?: Text;
+  audio?: Audio
   type: MessagesType;
 }
 
 export class Text {
   body: string;
+}
+
+export class Audio {
+  id: string;
 }
 
 export class Error {

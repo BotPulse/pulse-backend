@@ -1,6 +1,6 @@
 import { WebhookPayload } from '../dto/webhook-payload.dto';
 import { IncomingWhatsappRequestStrategy } from './strategy-interfaces';
-import { Injectable, Provider, Logger} from '@nestjs/common';
+import { Injectable, Provider, Logger } from '@nestjs/common';
 import { CreateMessageStatusDto } from '../../conversations/dto/create-status.dto';
 import { MessageStatusEnum } from '../../conversations/schemas/statuses.schema';
 import { StatusesService } from 'src/conversations/statuses/statuses.service';

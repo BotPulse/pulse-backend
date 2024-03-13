@@ -1,7 +1,6 @@
 import { Injectable, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ChatOpenAI } from 'langchain/chat_models/openai';
-import { OpenAI } from 'langchain/llms/openai';
 import {
   ChatPromptTemplate,
   HumanMessagePromptTemplate,

@@ -9,6 +9,7 @@ import * as path from 'path';
 import { OpenAIWhisperAudio } from 'langchain/document_loaders/fs/openai_whisper_audio';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import getAudioDurationInSeconds from 'get-audio-duration';
 @Injectable()
 export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
   constructor(
@@ -17,6 +18,11 @@ export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
     private httpService: HttpService,
   ) {}
   private logger = new Logger('AudioMessageStrategy');
+
+  async getAudioDuration(url: string) {
+    const duration = await getAudioDurationInSeconds(url);
+    console.log(duration);
+  }
 
   async downloadFile(url: string, fileName: string) {
     const tempFilePath = path.resolve(
@@ -73,6 +79,7 @@ export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
       'temp',
       `${audioId}.ogg`,
     );
+    await this.getAudioDuration(tempFilePath);
     const speechToText = await this.submitAudio(tempFilePath);
     const text = speechToText[0].pageContent;
     const formattedText = `🔊: ${text}
@@ -91,7 +98,10 @@ export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
         body: formattedText,
       },
     };
-    this.outcomingService.OutcomingMessage(response, displayPhoneNumber);
+    this.outcomingService.OutcomingTranscriptionMessage(
+      response,
+      displayPhoneNumber,
+    );
     this.deleteFile(tempFilePath);
     return requestBody;
   }

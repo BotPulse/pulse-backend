@@ -10,11 +10,22 @@ import { BotsModule } from './bots/bots.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BpassistantModule } from './bpassistant/bpassistant.module';
+import { BullModule } from '@nestjs/bull';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.development.env', '.env'],
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get<string>('REDIS_HOST'), // Obtiene el valor de REDIS_HOST de tu ConfigService, o utiliza 'localhost' como valor por defecto
+          port: configService.get<number>('REDIS_PORT'), // Obtiene el valor de REDIS_PORT de tu ConfigService, o utiliza 6379 como valor por defecto
+        },
+      }),
     }),
     OutcomingModule,
     IncomingModule,

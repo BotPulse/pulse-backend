@@ -10,18 +10,20 @@ import { OpenAIWhisperAudio } from 'langchain/document_loaders/fs/openai_whisper
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import getAudioDurationInSeconds from 'get-audio-duration';
+import { AuthNumbersService } from 'src/conversations/auth-numbers/auth-numbers.service';
 @Injectable()
 export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
   constructor(
     private readonly outcomingService: OutcomingService,
     private configService: ConfigService,
     private httpService: HttpService,
+    private authNumbersService: AuthNumbersService,
   ) {}
   private logger = new Logger('AudioMessageStrategy');
 
-  async getAudioDuration(url: string) {
+  async getAudioDuration(url: string): Promise<number> {
     const duration = await getAudioDurationInSeconds(url);
-    console.log(duration);
+    return duration;
   }
 
   async downloadFile(url: string, fileName: string) {
@@ -79,7 +81,8 @@ export class AudioMessageStrategy implements IncomingWhatsappRequestStrategy {
       'temp',
       `${audioId}.ogg`,
     );
-    await this.getAudioDuration(tempFilePath);
+    const duration = await this.getAudioDuration(tempFilePath);
+    await this.authNumbersService.addDuration(value.messages[0].from, duration);
     const speechToText = await this.submitAudio(tempFilePath);
     const text = speechToText[0].pageContent;
     const formattedText = `🔊: ${text}

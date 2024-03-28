@@ -11,6 +11,8 @@ export class AuthNumbers {
   number: string;
   @Prop()
   name: number;
+  @Prop()
+  secondsDecoded: number;
 }
 
 export const AuthNumbersSchema = SchemaFactory.createForClass(AuthNumbers);

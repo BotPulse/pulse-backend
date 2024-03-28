@@ -68,14 +68,4 @@ export class AuthController {
     await this.authService.logout(id);
   }
 
-  @Post('signup')
-  @ApiResponse({
-    status: 200,
-    description: 'User created successfully',
-    type: TokenResponseDto,
-  })
-  @ApiBadRequestResponse({ description: 'User already exists' })
-  async signUp(@Body() createUserDto: CreateUserDto) {
-    return await this.authService.signUp(createUserDto);
-  }
 }

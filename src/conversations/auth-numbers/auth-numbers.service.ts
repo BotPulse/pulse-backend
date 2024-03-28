@@ -9,6 +9,17 @@ export class AuthNumbersService {
     private authNumbersModel: Model<AuthNumbers>,
   ) {}
 
+  async addDuration(query: string, seconds: number): Promise<void> {
+    const authNumber = await this.authNumbersModel.findOne({ number: query });
+    if (authNumber) {
+      const currentSeconds = authNumber.secondsDecoded;
+      const newSeconds = !currentSeconds ? seconds : currentSeconds + seconds;
+      await this.authNumbersModel.updateOne(
+        { number: query },
+        { secondsDecoded: newSeconds },
+      );
+    }
+  }
   async numberExists(query: string): Promise<AuthNumbers[]> {
     return this.authNumbersModel.findOne({ number: query });
   }
